@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasta Yönetimi | Diyaliz Takip</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='hasta_yonetimi.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- Üst navbar -->
+    <header class="ust-navbar">
+      <button
+        type="button"
+        class="menu-buton"
+        id="menuButonu"
+        aria-label="Menüyü aç veya kapat"
+        aria-expanded="false"
+        aria-controls="yanMenu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="navbar-baslik">
+        <h1>Diyaliz Hasta Takip Sistemi</h1>
+      </div>
+
+      <div class="navbar-sag">
+        <span class="sistem-isareti"></span>
+        <span class="sistem-yazisi">
+          {{ "Admin Paneli" if rol == "admin" else "Sekreter Paneli" }}
+        </span>
+      </div>
+    </header>
+
+    <!-- Yandan açılan menü -->
+    <aside class="yan-menu" id="yanMenu" aria-hidden="true">
+      <div class="menu-baslik">
+        <div class="menu-logo">D</div>
+        <div>
+          <h2>Diyaliz Takip</h2>
+          <p>Yönetim Paneli</p>
+        </div>
+      </div>
+
+      <nav class="menu-linkleri">
+        <a href="{{ url_for('hasta_ekrani') }}" class="menu-link aktif">
+          <span class="menu-ikon">▦</span>
+          Hasta Yönetimi
+        </a>
+
+        {% if rol == "admin" %}
+        <a href="{{ url_for('admin_paneli') }}" class="menu-link">
+          <span class="menu-ikon">♙</span>
+          Sekreter Yönetimi
+        </a>
+        {% endif %}
+      </nav>
+
+      <div class="menu-alt">
+        <a href="{{ url_for('logout') }}">Çıkış Yap</a>
+      </div>
+    </aside>
+
+    <!-- Menü açıldığında arka planı kaplayan alan -->
+    <div class="menu-katmani" id="menuKatmani"></div>
+
+    <!-- Ana içerik -->
+    <main class="ana-icerik">
+      <section class="sayfa-baslik">
+        <div>
+          <h2>Hasta Yönetimi</h2>
+          <p>Hasta durumlarını ve tahmini işlem sürelerini yönetin.</p>
+        </div>
+      </section>
+
+      <div class="hasta-bilgi-popup-katmani" id="hastaBilgiPopup" hidden>
+        <section class="hasta-bilgi-kutusu" role="dialog" aria-modal="true">
+          <div class="hasta-bilgi-ust">
+            <div>
+              <h3>Hasta Bilgileri</h3>
+              <p id="bilgiHastaAdi">Hasta adı</p>
+            </div>
+            <button type="button" id="bilgiKapatButonu">✕</button>
+          </div>
+
+          <div class="hasta-bilgi-grid">
+            <div class="bilgi-alani">
+              <span>Hasta No</span>
+              <strong id="bilgiHastaNo">-</strong>
+            </div>
+            <div class="bilgi-alani">
+              <span>Yaş</span>
+              <strong id="bilgiYas">-</strong>
+            </div>
+            <div class="bilgi-alani">
+              <span>Telefon</span>
+              <strong id="bilgiTelefon">-</strong>
+            </div>
+            <div class="bilgi-alani">
+              <span>Diyaliz Durumu</span>
+              <strong id="bilgiDurum">-</strong>
+            </div>
+          </div>
+
+          <div class="hasta-bilgi-alt">
+            <button type="button" id="bilgiKapatAltButonu">Kapat</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Tablo alanı -->
+      <section class="tablo-panel">
+        <div class="tablo-ust">
+          <div>
+            <h3>Hasta Durum Tablosu</h3>
+            <p>Hasta kayıtları eklendiğinde bu alanda listelenecektir.</p>
+          </div>
+        </div>
+
+        <div class="tablo-kaydirma">
+          <table class="hasta-tablosu">
+            <thead>
+              <tr>
+                <th class="hasta-sutunu">Hastalar</th>
+                <th class="durum-sutunu">Durumlar</th>
+                <th class="sure-sutunu">Süre</th>
+                <th class="onay-sutunu">Onay</th>
+              </tr>
+            </thead>
+
+            <tbody id="hastaTabloGovdesi">
+              <!-- Hasta kayıtları daha sonra backend ile eklenecek. -->
+            </tbody>
+          </table>
+
+          <!-- Tablo boşken gösterilen açıklama -->
+          <div class="bos-tablo" id="bosTablo">
+            <div class="bos-tablo-ikon">▤</div>
+            <h3>Henüz hasta kaydı yok</h3>
+            <p>
+              Hasta bilgileri eklendiğinde kayıtlar burada görüntülenecektir.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="sayfa-alt">Diyaliz Takip Sistemi</footer>
+    </main>
+
+    <!-- Hasta işlemleri menüsü -->
+    <div id="hastaIslemMenusu" class="hasta-islem-menusu" hidden>
+      <button type="button" id="diyalizIptalButonu">Diyalizi İptal Et</button>
+    </div>
+
+    <!-- İptal onay penceresi -->
+    <div id="iptalOnayPenceresi" class="modal-katmani" hidden>
+      <div
+        class="modal-kutu"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="iptalBaslik"
+      >
+        <h3 id="iptalBaslik">Diyaliz İptali</h3>
+
+        <p id="iptalMesaji">
+          Hastanın diyalizini iptal etmek istediğinize emin misiniz?
+        </p>
+
+        <div class="modal-butonlar">
+          <button type="button" id="iptalVazgecButonu">Vazgeç</button>
+
+          <button type="button" id="iptalOnayButonu">Evet, İptal Et</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const menuButonu = document.getElementById("menuButonu");
+      const yanMenu = document.getElementById("yanMenu");
+      const menuKatmani = document.getElementById("menuKatmani");
+
+      function menuDurumunuDegistir(acik) {
+        document.body.classList.toggle("menu-acik", acik);
+
+        menuButonu.setAttribute("aria-expanded", String(acik));
+        yanMenu.setAttribute("aria-hidden", String(!acik));
+      }
+
+      menuButonu.addEventListener("click", () => {
+        const menuAcik = document.body.classList.contains("menu-acik");
+        menuDurumunuDegistir(!menuAcik);
+      });
+
+      menuKatmani.addEventListener("click", () => {
+        menuDurumunuDegistir(false);
+      });
+
+      document.addEventListener("keydown", (olay) => {
+        if (olay.key === "Escape") {
+          menuDurumunuDegistir(false);
+        }
+      });
+
+      /*
+          Örnek hasta satırı oluşturma fonksiyonu.
+          Şimdilik otomatik olarak çağrılmaz.
+          Backend hazır olduğunda bu alan veritabanından gelen
+          hasta bilgileriyle doldurulabilir.
+        */
+      function hastaSatiriOlustur(hastaAdi) {
+        const tabloGovdesi = document.getElementById("hastaTabloGovdesi");
+        const bosTablo = document.getElementById("bosTablo");
+
+        const satir = document.createElement("tr");
+
+        const hastaHucre = document.createElement("td");
+        hastaHucre.className = "hasta-adi";
+        hastaHucre.textContent = hastaAdi;
+
+        const durumHucre = document.createElement("td");
+        const durumSecimi = document.createElement("select");
+        durumSecimi.className = "tablo-secimi";
+        durumSecimi.setAttribute("aria-label", hastaAdi + " diyaliz durumu");
+
+        const durumlar = [
+          "Hasta katater takılması işlemi için hazırlanıyor.",
+          "Hastanın diyaliz işlemi başladı.",
+          "Hastanın diyaliz tedavisi bitti.",
+          "Hasta kliniğe transfer edildi.",
+        ];
+
+        const durumVarsayilan = document.createElement("option");
+        durumVarsayilan.value = "";
+        durumVarsayilan.textContent = "Durum seçiniz";
+        durumVarsayilan.selected = true;
+        durumSecimi.appendChild(durumVarsayilan);
+
+        durumlar.forEach((durum) => {
+          const secenek = document.createElement("option");
+          secenek.value = durum;
+          secenek.textContent = durum;
+          durumSecimi.appendChild(secenek);
+        });
+
+        // İptal seçeneği yalnızca bir kez eklenir
+        const iptalSecenegi = document.createElement("option");
+        iptalSecenegi.value = "iptal";
+        iptalSecenegi.textContent = "Diyaliz iptal edildi.";
+        durumSecimi.appendChild(iptalSecenegi);
+
+        durumHucre.appendChild(durumSecimi);
+
+        const sureHucre = document.createElement("td");
+        const sureSecimi = document.createElement("select");
+        sureSecimi.className = "tablo-secimi sure-secimi";
+        sureSecimi.setAttribute("aria-label", hastaAdi + " işlem süresi");
+
+        const sureler = [
+          "30dk",
+          "1saat",
+          "2saat",
+          "3saat",
+          "4saat",
+          "5saat",
+          "6saat",
+        ];
+
+        const sureVarsayilan = document.createElement("option");
+        sureVarsayilan.value = "";
+        sureVarsayilan.textContent = "Süre seçiniz";
+        sureVarsayilan.selected = true;
+        sureSecimi.appendChild(sureVarsayilan);
+
+        sureler.forEach((sure) => {
+          const secenek = document.createElement("option");
+          secenek.value = sure;
+          secenek.textContent = sure;
+          sureSecimi.appendChild(secenek);
+        });
+
+        sureHucre.appendChild(sureSecimi);
+
+        const onayHucre = document.createElement("td");
+        const onayButonu = document.createElement("button");
+        onayButonu.type = "button";
+        onayButonu.className = "onay-buton";
+        onayButonu.setAttribute("aria-label", hastaAdi + " durumunu onayla");
+        onayButonu.title = "Seçimleri onayla";
+
+        const tik = document.createElement("span");
+        tik.className = "onay-tik";
+        tik.textContent = "✓";
+        onayButonu.appendChild(tik);
+
+        onayButonu.addEventListener("click", () => {
+          if (!durumSecimi.value || !sureSecimi.value) {
+            alert("Lütfen durum ve süre seçiniz.");
+            return;
+          }
+
+          onayButonu.classList.add("onaylandi");
+          onayButonu.title = "Seçimler ekranda onaylandı";
+        });
+
+        durumSecimi.addEventListener("change", () => {
+          onayButonu.classList.remove("onaylandi");
+        });
+
+        sureSecimi.addEventListener("change", () => {
+          onayButonu.classList.remove("onaylandi");
+        });
+
+        onayHucre.appendChild(onayButonu);
+
+        satir.appendChild(hastaHucre);
+        satir.appendChild(durumHucre);
+        satir.appendChild(sureHucre);
+        satir.appendChild(onayHucre);
+
+        tabloGovdesi.appendChild(satir);
+        bosTablo.hidden = true;
+      }
+
+      const hastaIslemMenusu = document.getElementById("hastaIslemMenusu");
+      const diyalizIptalButonu = document.getElementById("diyalizIptalButonu");
+      const iptalOnayPenceresi = document.getElementById("iptalOnayPenceresi");
+      const iptalVazgecButonu = document.getElementById("iptalVazgecButonu");
+      const iptalOnayButonu = document.getElementById("iptalOnayButonu");
+      const iptalMesaji = document.getElementById("iptalMesaji");
+
+      let secilenHastaSatiri = null;
+
+      // Hasta satırına sağ tıklanınca işlem menüsünü aç
+      document
+        .getElementById("hastaTabloGovdesi")
+        .addEventListener("contextmenu", function (olay) {
+          const satir = olay.target.closest("tr");
+
+          if (!satir || !this.contains(satir)) {
+            return;
+          }
+
+          olay.preventDefault();
+
+          secilenHastaSatiri = satir;
+
+          const hastaAdi =
+            satir.querySelector(".hasta-adi")?.textContent.trim() ||
+            "Seçilen hasta";
+
+          diyalizIptalButonu.textContent = "Diyalizi İptal Et";
+          iptalMesaji.textContent =
+            hastaAdi +
+            " adlı hastanın diyalizini iptal etmek istediğinize emin misiniz?";
+
+          hastaIslemMenusu.hidden = false;
+
+          // Menünün ekran dışına taşmasını önle
+          const menuGenisligi = 200;
+          const menuYuksekligi = 55;
+
+          hastaIslemMenusu.style.left =
+            Math.min(olay.clientX, window.innerWidth - menuGenisligi - 10) +
+            "px";
+
+          hastaIslemMenusu.style.top =
+            Math.min(olay.clientY, window.innerHeight - menuYuksekligi - 10) +
+            "px";
+        });
+
+      // Diyalizi iptal et seçeneği
+      diyalizIptalButonu.addEventListener("click", function () {
+        hastaIslemMenusu.hidden = true;
+        iptalOnayPenceresi.hidden = false;
+      });
+
+      // Vazgeç
+      iptalVazgecButonu.addEventListener("click", function () {
+        iptalOnayPenceresi.hidden = true;
+        secilenHastaSatiri = null;
+      });
+
+      // Onayla
+      iptalOnayButonu.addEventListener("click", function () {
+        if (!secilenHastaSatiri) {
+          return;
+        }
+
+        const durumSecimi = secilenHastaSatiri.querySelector("select");
+
+        if (durumSecimi) {
+          durumSecimi.value = "iptal";
+        }
+
+        // İptal durumunu satırda belirt
+        secilenHastaSatiri.classList.add("diyaliz-iptal");
+
+        iptalOnayPenceresi.hidden = true;
+        hastaIslemMenusu.hidden = true;
+
+        alert(
+          "Diyaliz iptal edildi. Bu değişiklik şimdilik yalnızca ekranda geçerlidir.",
+        );
+
+        secilenHastaSatiri = null;
+      });
+
+      // Menü dışına tıklanınca menüyü kapat
+      document.addEventListener("click", function (olay) {
+        if (!hastaIslemMenusu.contains(olay.target)) {
+          hastaIslemMenusu.hidden = true;
+        }
+      });
+
+      // Escape ile pencereleri kapat
+      document.addEventListener("keydown", function (olay) {
+        if (olay.key === "Escape") {
+          hastaIslemMenusu.hidden = true;
+          iptalOnayPenceresi.hidden = true;
+          secilenHastaSatiri = null;
+        }
+      });
+
+      const hastaBilgiKutusu = document.getElementById("hastaBilgiKutusu");
+
+      // Örnek hasta bilgileri
+      const ornekHastaBilgileri = {
+        "Ahmet Yılmaz": {
+          no: "H001",
+          yas: "58",
+          telefon: "0555 000 00 01",
+        },
+        Gökhan: {
+          no: "H002",
+          yas: "64",
+          telefon: "0555 000 00 02",
+        },
+        "Gökhan ": {
+          no: "H002",
+          yas: "64",
+          telefon: "0555 000 00 02",
+        },
+      };
+
+      // Hasta satırına çift tıklanınca bilgileri göster
+      document
+        .getElementById("hastaTabloGovdesi")
+        .addEventListener("dblclick", function (olay) {
+          const satir = olay.target.closest("tr");
+
+          if (!satir || !this.contains(satir)) {
+            return;
+          }
+
+          const hastaAdi = satir.querySelector(".hasta-adi").textContent.trim();
+
+          const hasta = ornekHastaBilgileri[hastaAdi];
+
+          document.getElementById("bilgiHastaAdi").textContent = hastaAdi;
+          document.getElementById("bilgiHastaNo").textContent = hasta
+            ? hasta.no
+            : "Bilgi girilmedi";
+
+          document.getElementById("bilgiYas").textContent = hasta
+            ? hasta.yas
+            : "Bilgi girilmedi";
+
+          document.getElementById("bilgiTelefon").textContent = hasta
+            ? hasta.telefon
+            : "Bilgi girilmedi";
+
+          const durumSecimi = satir.querySelector("select");
+          const seciliDurum = durumSecimi ? durumSecimi.value : "";
+
+          document.getElementById("bilgiDurum").textContent =
+            seciliDurum === "iptal"
+              ? "Diyaliz iptal edildi."
+              : seciliDurum || "Henüz seçilmedi";
+
+          hastaBilgiKutusu.hidden = false;
+          hastaBilgiKutusu.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        });
+
+      // Bilgi kutusunu kapat
+      document
+        .getElementById("bilgiKapatButonu")
+        .addEventListener("click", function () {
+          hastaBilgiKutusu.hidden = true;
+        });
+
+      // Örnek hasta oluştur
+      hastaSatiriOlustur("Ahmet Yılmaz");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+      hastaSatiriOlustur("Gökhan ");
+    </script>
+  </body>
+</html>
