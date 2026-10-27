@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sekreter Girişi | Diyaliz Takip</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+    <main class="login-container">
+
+        <section class="login-card">
+
+            <div class="logo-area">
+                <div class="logo-icon">+</div>
+                <h1>Diyaliz Takip Sistemi</h1>
+                <p>Sekreter Yönetim Paneli</p>
+            </div>
+
+            <div class="welcome-area">
+                <h2>Hoş Geldiniz</h2>
+                <p>Devam etmek için hesabınıza giriş yapın.</p>
+            </div>
+
+            {% with mesajlar = get_flashed_messages(with_categories=true) %}
+                {% if mesajlar %}
+                    {% for kategori, mesaj in mesajlar %}
+                        <div class="alert alert-{{ kategori }}" role="alert">
+                            {{ mesaj }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+
+                <div class="form-group">
+                    <label for="kullanici_adi">Kullanıcı Adı</label>
+
+                    <input
+                        type="text"
+                        id="kullanici_adi"
+                        name="kullanici_adi"
+                        placeholder="Kullanıcı adınızı girin"
+                        autocomplete="username"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="sifre">Şifre</label>
+
+                    <input
+                        type="password"
+                        id="sifre"
+                        name="sifre"
+                        placeholder="Şifrenizi girin"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="login-button">
+                    Giriş Yap
+                </button>
+
+            </form>
+
+            <div class="login-footer">
+                Yetkili personel kullanımına özeldir.
+            </div>
+
+        </section>
+
+    </main>
+</body>
+</html>

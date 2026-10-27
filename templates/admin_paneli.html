@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Paneli | Diyaliz Takip</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #f4f7fb;
+        color: #172536;
+        font-family: Arial, sans-serif;
+      }
+
+      .admin-container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 35px 20px;
+      }
+
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 28px;
+      }
+
+      .admin-header h1 {
+        margin: 0 0 8px;
+        font-size: 27px;
+      }
+
+      .admin-header p {
+        margin: 0;
+        color: #738195;
+      }
+
+      .admin-card {
+        background: white;
+        border: 1px solid #dfe6ee;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 24px;
+        box-shadow: 0 5px 20px rgba(23, 37, 54, 0.04);
+      }
+
+      .admin-card h2 {
+        margin: 0 0 22px;
+        font-size: 20px;
+      }
+
+      .admin-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .form-group label {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d7e0e4;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      .form-group input:focus {
+        outline: 2px solid #c5dcff;
+        border-color: #0750ad;
+      }
+
+      .submit-button {
+        grid-column: 1 / -1;
+        padding: 13px;
+        background: #0750ad;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .submit-button:hover {
+        background: #063d87;
+      }
+
+      .logout-button {
+        padding: 11px 15px;
+        border: 1px solid #f0caca;
+        border-radius: 8px;
+        background: #fff0f0;
+        color: #b42318;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .message {
+        padding: 13px;
+        margin-bottom: 18px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      .message.error {
+        background: #fff0f0;
+        color: #a52a2a;
+      }
+
+      .message.success {
+        background: #e7f8ee;
+        color: #18864b;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .admin-table th,
+      .admin-table td {
+        padding: 14px;
+        text-align: left;
+        border: 1px solid #dfe6ee;
+      }
+
+      .admin-table th {
+        background: #edf3fa;
+      }
+
+      .role-label {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #e7f8ee;
+        color: #18864b;
+        font-size: 12px;
+      }
+
+      .empty-message {
+        color: #738195;
+      }
+
+      @media (max-width: 600px) {
+        .admin-container {
+          padding: 22px 12px;
+        }
+
+        .admin-header h1 {
+          font-size: 21px;
+        }
+
+        .admin-card {
+          padding: 17px;
+        }
+
+        .admin-form {
+          grid-template-columns: 1fr;
+        }
+
+        .submit-button {
+          grid-column: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="admin-container">
+      <header class="admin-header">
+        <div>
+          <h1>Admin Yönetim Paneli</h1>
+          <p>Hoş geldiniz, {{ kullanici_adi }}.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('logout') }}">
+          <button type="submit" class="cikis-buton">Çıkış Yap</button>
+        </form>
+      </header>
+
+      {% with mesajlar = get_flashed_messages(with_categories=true) %} {% for
+      kategori, mesaj in mesajlar %}
+      <div class="message {{ kategori }}">{{ mesaj }}</div>
+      {% endfor %} {% endwith %}
+
+      <section class="admin-card">
+        <h2>Yeni Sekreter Hesabı Oluştur</h2>
+
+        <form
+          method="POST"
+          action="{{ url_for('kullanici_ekle') }}"
+          class="admin-form"
+        >
+          <div class="form-group">
+            <label for="kullanici_adi">Kullanıcı Adı</label>
+            <input
+              type="text"
+              id="kullanici_adi"
+              name="kullanici_adi"
+              maxlength="100"
+              autocomplete="off"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="sifre">Şifre</label>
+            <input
+              type="password"
+              id="sifre"
+              name="sifre"
+              minlength="8"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="sifre_tekrar">Şifre Tekrarı</label>
+            <input
+              type="password"
+              id="sifre_tekrar"
+              name="sifre_tekrar"
+              minlength="8"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="submit-button">
+            + Sekreter Hesabı Oluştur
+          </button>
+        </form>
+      </section>
+
+      <section class="admin-card">
+        <h2>Oluşturulan Sekreter Hesapları</h2>
+
+        {% if kullanicilar %}
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Kullanıcı Adı</th>
+                <th>Yetki</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for kullanici in kullanicilar %}
+              <tr>
+                <td>{{ kullanici["kullanici_adi"] }}</td>
+                <td>
+                  <span class="role-label">Sekreter</span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="empty-message">Henüz bir sekreter hesabı oluşturulmadı.</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>

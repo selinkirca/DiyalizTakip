@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sekreter Paneli | Diyaliz Takip</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+    <main class="login-container">
+        <section class="login-card">
+
+            <div class="logo-area">
+                <div class="logo-icon">+</div>
+                <h1>Diyaliz Takip Sistemi</h1>
+                <p>Sekreter Yönetim Paneli</p>
+            </div>
+
+            <div class="welcome-area">
+                <h2>Giriş Başarılı</h2>
+
+                <p>
+                    Hoş geldiniz, {{ kullanici_adi }}.
+                    Sekreter paneline başarıyla giriş yaptınız.
+                </p>
+            </div>
+
+            <form method="POST" action="{{ url_for('logout') }}">
+                <button type="submit" class="login-button">
+                    Güvenli Çıkış Yap
+                </button>
+            </form>
+
+            <div class="login-footer">
+                Hasta yönetimi ekranı bir sonraki aşamada eklenecek.
+            </div>
+
+        </section>
+    </main>
+</body>
+</html>
