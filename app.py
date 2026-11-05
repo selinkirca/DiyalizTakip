@@ -4,18 +4,12 @@ import sqlite3
 from pathlib import Path
 from functools import wraps
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 4944183e79519d726f8e1117a4cc6313d45a6b46
 from flask import (
     Flask,
     render_template,
     request,
-<<<<<<< HEAD
     jsonify,
-=======
->>>>>>> 4944183e79519d726f8e1117a4cc6313d45a6b46
     redirect,
     url_for,
     session,
@@ -53,7 +47,6 @@ def veritabani_baglantisi():
     baglanti.row_factory = sqlite3.Row
     return baglanti
 
-<<<<<<< HEAD
 def hasta_sutunlarini_hazirla():
     with veritabani_baglantisi() as baglanti:
 
@@ -78,8 +71,6 @@ def hasta_sutunlarini_hazirla():
 
 
 hasta_sutunlarini_hazirla()
-=======
->>>>>>> 4944183e79519d726f8e1117a4cc6313d45a6b46
 
 # --------------------------------------------------
 # GİRİŞ KONTROLÜ
@@ -168,7 +159,6 @@ def login():
 @app.route("/hasta-ekrani")
 @giris_gerekli
 def hasta_ekrani():
-<<<<<<< HEAD
     with veritabani_baglantisi() as baglanti:
         hastalar = baglanti.execute("""
             SELECT hasta_no, ad_soyad, grup_no
@@ -321,15 +311,6 @@ def hasta_durum_guncelle():
             "basarili": False,
             "mesaj": "Veritabanı güncelleme hatası."
         }), 500
-=======
-    return render_template(
-        "hasta_yonetimi.html",
-        kullanici_adi=session["kullanici_adi"],
-        rol=session["rol"]
-    )
-
-
->>>>>>> 4944183e79519d726f8e1117a4cc6313d45a6b46
 # --------------------------------------------------
 # DASHBOARD
 # --------------------------------------------------
@@ -363,7 +344,6 @@ def admin_paneli():
             """
         ).fetchall()
 
-<<<<<<< HEAD
         return render_template(
             "admin_paneli.html",
             kullanici_adi=session["kullanici_adi"],
@@ -396,17 +376,10 @@ def admin_hasta_yonetimi():
         rol=session["rol"],
         hastalar=hastalar,
         aktif_sayfa="hasta"
-=======
-    return render_template(
-        "admin_paneli.html",
-        kullanici_adi=session["kullanici_adi"],
-        kullanicilar=kullanicilar
->>>>>>> 4944183e79519d726f8e1117a4cc6313d45a6b46
     )
 
 
 # --------------------------------------------------
-<<<<<<< HEAD
 # ADMİN HASTA EKLEME
 # --------------------------------------------------
 
@@ -601,8 +574,6 @@ def admin_hasta_sil(hasta_no):
     return redirect(url_for("admin_hasta_yonetimi"))    
 
 # --------------------------------------------------
-=======
->>>>>>> 4944183e79519d726f8e1117a4cc6313d45a6b46
 # YENİ SEKRETER HESABI OLUŞTURMA
 # --------------------------------------------------
 
