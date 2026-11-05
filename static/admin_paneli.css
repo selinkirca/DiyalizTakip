@@ -1,0 +1,490 @@
+
+/* =========================================
+   SEKRETER YÖNETİMİ - SAYFA İÇERİĞİ
+   Navbar ve yan menü stillerine dokunulmaz.
+========================================= */
+
+/* GENEL İÇERİK ALANI */
+
+.admin-container {
+    width: 100%;
+    max-width: 1450px;
+    min-height: calc(100vh - 78px);
+    margin: 0 auto;
+    padding: 110px 36px 40px;
+}
+
+/* =========================================
+   SAYFA BAŞLIĞI
+========================================= */
+
+.admin-sayfa-baslik {
+    position: relative;
+    margin-bottom: 32px;
+    padding: 5px 0 22px;
+    border-bottom: 3px solid #dce8f8;
+}
+
+.admin-sayfa-baslik h1 {
+    margin: 0 0 9px;
+    color: #1d3557;
+    font-size: 30px;
+    font-weight: 750;
+    letter-spacing: -0.7px;
+}
+
+.admin-sayfa-baslik p {
+    margin: 0;
+    color: #718096;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* =========================================
+   BİLDİRİMLER
+========================================= */
+
+.message {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.message.success {
+    color: #176b43;
+    background: #e8f7ef;
+    border: 1px solid #b9e7ce;
+}
+
+.message.error,
+.message.danger {
+    color: #a52b36;
+    background: #fff0f0;
+    border: 1px solid #f3c5c8;
+}
+
+.message.warning {
+    color: #856404;
+    background: #fff8e5;
+    border: 1px solid #f2dfaa;
+}
+
+.message.info {
+    color: #245b9e;
+    background: #edf5ff;
+    border: 1px solid #c9def8;
+}
+
+/* =========================================
+   ANA KARTLAR
+========================================= */
+
+.admin-card {
+    width: 100%;
+    margin-bottom: 30px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e0e8f2;
+    border-radius: 15px;
+    box-shadow: 0 5px 22px rgba(30, 55, 90, 0.07);
+}
+
+/* =========================================
+   KART BAŞLIKLARI
+========================================= */
+
+.kart-baslik {
+    min-height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 16px 24px;
+    background: #203958;
+    color: #ffffff;
+}
+
+.kart-baslik h2 {
+    margin: 0 0 5px;
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.kart-baslik p {
+    margin: 0;
+    color: #d6e1ef;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Kart başlığındaki + işareti */
+
+.kart-ikon {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #2878e5;
+    color: #ffffff;
+    font-size: 27px;
+    font-weight: 400;
+}
+
+/* Hesap sayısı */
+
+.hesap-sayisi {
+    flex-shrink: 0;
+    padding: 9px 16px;
+    border-radius: 25px;
+    background: #e9f1ff;
+    color: #2165c5;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* =========================================
+   SEKRETER OLUŞTURMA FORMU
+========================================= */
+
+.admin-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    align-items: end;
+    gap: 20px;
+    padding: 28px 24px;
+}
+
+.form-group {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label {
+    color: #243b5a;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.form-group input {
+    width: 100%;
+    height: 52px;
+    padding: 0 15px;
+    outline: none;
+    border: 1px solid #d8e1ed;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #243b5a;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input::placeholder {
+    color: #9aa8bb;
+}
+
+.form-group input:focus {
+    border-color: #2878e5;
+    box-shadow: 0 0 0 3px rgba(40, 120, 229, 0.12);
+}
+
+/* =========================================
+   FORM GÖNDERME BUTONU
+========================================= */
+
+.submit-button {
+    min-width: 210px;
+    min-height: 52px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: none;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #2678e5, #145bc5);
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 13px rgba(30, 101, 205, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(30, 101, 205, 0.28);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
+/* =========================================
+   SEKRETER TABLOSU
+========================================= */
+
+.table-wrapper {
+    width: 100%;
+    padding: 16px 18px 20px;
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #dce5f0;
+    border-radius: 9px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.admin-table thead {
+    background: #f0f4fa;
+}
+
+.admin-table th {
+    padding: 16px 20px;
+    color: #263e5e;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
+    border-bottom: 1px solid #dce5f0;
+}
+
+.admin-table td {
+    padding: 15px 20px;
+    color: #344760;
+    font-size: 14px;
+    border-bottom: 1px solid #e8edf4;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table tbody tr {
+    transition: background 0.2s;
+}
+
+.admin-table tbody tr:hover {
+    background: #f7faff;
+}
+
+/* Sıra numarası */
+
+.admin-table th:first-child,
+.admin-table td:first-child {
+    width: 90px;
+    text-align: center;
+}
+
+/* Kullanıcı adı */
+
+.kullanici-adi {
+    font-weight: 600;
+    color: #263e5e !important;
+}
+
+/* Yetki etiketi */
+
+.role-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 95px;
+    padding: 7px 15px;
+    border-radius: 20px;
+    background: #e8f1ff;
+    color: #2165c5;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* =========================================
+   BOŞ LİSTE MESAJI
+========================================= */
+
+.empty-message {
+    margin: 0 18px 18px;
+    min-height: 100px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 12px;
+    background: #edf3ff;
+    color: #36577f;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* =========================================
+   TABLET UYUMLULUĞU
+========================================= */
+
+@media (max-width: 1100px) {
+
+    .admin-container {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .admin-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .submit-button {
+        width: 100%;
+        grid-column: 1 / -1;
+    }
+}
+
+/* =========================================
+   MOBİL UYUMLULUK
+========================================= */
+
+@media (max-width: 650px) {
+
+    .admin-container {
+        padding: 90px 13px 25px;
+    }
+
+    .admin-sayfa-baslik {
+        margin-bottom: 22px;
+    }
+
+    .admin-sayfa-baslik h1 {
+        font-size: 23px;
+    }
+
+    .admin-sayfa-baslik p {
+        font-size: 13px;
+    }
+
+    .admin-card {
+        margin-bottom: 20px;
+        border-radius: 12px;
+    }
+
+    .kart-baslik {
+        min-height: 60px;
+        padding: 14px 16px;
+    }
+
+    .kart-baslik h2 {
+        font-size: 16px;
+    }
+
+    .kart-baslik p {
+        font-size: 12px;
+    }
+
+    .kart-ikon {
+        width: 33px;
+        height: 33px;
+        font-size: 23px;
+    }
+
+    .hesap-sayisi {
+        padding: 7px 10px;
+        font-size: 11px;
+    }
+
+    .admin-form {
+        grid-template-columns: 1fr;
+        gap: 17px;
+        padding: 20px 16px;
+    }
+
+    .form-group input {
+        height: 48px;
+    }
+
+    .submit-button {
+        grid-column: auto;
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .table-wrapper {
+        padding: 12px;
+    }
+
+    .admin-table {
+        min-width: 450px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 13px 12px;
+        font-size: 13px;
+    }
+
+    .empty-message {
+        margin: 0 12px 12px;
+        min-height: 85px;
+        padding: 18px;
+        font-size: 13px;
+    }
+}
+/* HASTA BAŞLIK ALANI */
+
+.hasta-baslik-alani {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+/* TOPLAM HASTA KUTUSU */
+
+.toplam-hasta-kutu {
+    min-width: 190px;
+    padding: 13px 22px;
+    background: #ffffff;
+    border: 1px solid #dfe6ee;
+    border-left: 4px solid #0750ad;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 12px rgba(23, 37, 54, 0.05);
+}
+
+.toplam-hasta-baslik {
+    color: #738195;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.toplam-hasta-sayi {
+    color: #0750ad;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+/* MOBİL UYUMLULUK */
+
+@media (max-width: 600px) {
+    .hasta-baslik-alani {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .toplam-hasta-kutu {
+        width: 100%;
+    }
+}

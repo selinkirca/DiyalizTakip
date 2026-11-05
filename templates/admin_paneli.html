@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sekreter Yönetimi | Diyaliz Takip</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_ortak.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_paneli.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='ortak_navbar.css') }}">
+</head>
+
+<body>
+
+    {% set aktif_sayfa = 'sekreter' %}
+    {% include 'admin_ust_menu.html' %}
+
+    <main class="admin-container">
+
+        <!-- Sayfa başlığı -->
+        <div class="admin-sayfa-baslik">
+            <h1>Sekreter Yönetimi</h1>
+            <p>Sekreter hesaplarını oluşturun ve yönetin.</p>
+        </div>
+
+        <!-- Bildirimler -->
+        {% with mesajlar = get_flashed_messages(with_categories=true) %}
+        {% for kategori, mesaj in mesajlar %}
+        <div class="message {{ kategori }}">
+            {{ mesaj }}
+        </div>
+        {% endfor %}
+        {% endwith %}
+
+        <!-- Sekreter oluşturma -->
+        <section class="admin-card">
+
+            <div class="kart-baslik">
+                <div>
+                    <h2>Yeni Sekreter Hesabı Oluştur</h2>
+                    <p>Sisteme giriş yapabilecek yeni bir sekreter hesabı tanımlayın.</p>
+                </div>
+
+                <span class="kart-ikon">+</span>
+            </div>
+
+            <form method="POST" action="{{ url_for('kullanici_ekle') }}" class="admin-form">
+
+                <div class="form-group">
+                    <label for="kullanici_adi">Kullanıcı Adı</label>
+                    <input type="text" id="kullanici_adi" name="kullanici_adi" maxlength="100"
+                        placeholder="Kullanıcı adı giriniz" autocomplete="off" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sifre">Şifre</label>
+                    <input type="password" id="sifre" name="sifre" minlength="8" placeholder="En az 8 karakter"
+                        autocomplete="new-password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sifre_tekrar">Şifre Tekrarı</label>
+                    <input type="password" id="sifre_tekrar" name="sifre_tekrar" minlength="8"
+                        placeholder="Şifreyi tekrar giriniz" autocomplete="new-password" required>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    + Sekreter Hesabı Oluştur
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- Sekreter hesapları -->
+        <section class="admin-card">
+
+            <div class="kart-baslik">
+                <div>
+                    <h2>Oluşturulan Sekreter Hesapları</h2>
+                    <p>Sistemde kayıtlı sekreter hesaplarını görüntüleyin.</p>
+                </div>
+
+                <span class="hesap-sayisi">
+                    {{ kullanicilar|length }} Hesap
+                </span>
+            </div>
+
+            {% if kullanicilar %}
+
+            <div class="table-wrapper">
+
+                <table class="admin-table">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Kullanıcı Adı</th>
+                            <th>Yetki</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for kullanici in kullanicilar %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+
+                            <td class="kullanici-adi">
+                                {{ kullanici["kullanici_adi"] }}
+                            </td>
+
+                            <td>
+                                <span class="role-label">Sekreter</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-message">
+                Henüz bir sekreter hesabı oluşturulmadı.
+            </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

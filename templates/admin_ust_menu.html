@@ -1,0 +1,199 @@
+
+<!-- =====================================
+     ORTAK ÜST NAVBAR
+===================================== -->
+
+<header class="ust-navbar">
+
+    <button
+        type="button"
+        class="menu-buton"
+        id="menuButonu"
+        aria-label="Menüyü aç veya kapat"
+        aria-expanded="false"
+        aria-controls="yanMenu">
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+    </button>
+
+    <div class="navbar-baslik">
+        <h1>Diyaliz Hasta Takip Sistemi</h1>
+    </div>
+
+    <div class="navbar-sag">
+
+        <span class="sistem-isareti"></span>
+
+        <div class="navbar-kullanici">
+
+            <span class="hosgeldiniz">
+                Hoş geldiniz,
+                <strong>{{ session.get('kullanici_adi', 'Kullanıcı') }}</strong>
+            </span>
+
+            <span class="navbar-tarih" id="navbarTarih"></span>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================
+     YANDAN AÇILAN MENÜ
+===================================== -->
+
+<aside class="yan-menu" id="yanMenu" aria-hidden="true">
+
+    <!-- Menü başlığı -->
+    <div class="menu-baslik">
+
+        <div class="menu-logo">D</div>
+
+        <div>
+            <h2>Diyaliz Takip</h2>
+            <p>Yönetim Paneli</p>
+        </div>
+
+    </div>
+
+
+    <!-- Menü bağlantıları -->
+    <nav class="menu-linkleri">
+
+        <a
+            href="{{ url_for('hasta_ekrani') }}"
+            class="menu-link {% if aktif_sayfa == 'ana_sayfa' %}aktif{% endif %}">
+
+            <span class="menu-ikon">▦</span>
+            Ana Sayfa
+
+        </a>
+
+
+        {% if session.get('rol') == 'admin' %}
+
+        <a
+            href="{{ url_for('admin_paneli') }}"
+            class="menu-link {% if aktif_sayfa == 'sekreter' %}aktif{% endif %}">
+
+            <span class="menu-ikon">♙</span>
+            Sekreter Yönetimi
+
+        </a>
+
+        {% endif %}
+
+                {% if session.get('rol') == 'admin' %}
+
+        <a
+            href="{{ url_for('admin_hasta_yonetimi') }}"
+            class="menu-link {% if aktif_sayfa == 'sekreter' %}aktif{% endif %}">
+
+            <span class="menu-ikon">♙</span>
+            Hasta Yönetimi
+
+        </a>
+
+        {% endif %}
+
+    </nav>
+
+
+    <!-- Çıkış -->
+    <div class="menu-alt">
+
+        <form action="{{ url_for('logout') }}" method="POST">
+
+            <button type="submit" class="admin-menu-cikis">
+
+                <span class="menu-ikon">↪</span>
+                Çıkış Yap
+
+            </button>
+
+        </form>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================
+     MENÜ ARKA PLANI
+===================================== -->
+
+<div class="menu-katmani" id="menuKatmani"></div>
+
+
+<!-- =====================================
+     NAVBAR JAVASCRIPT
+===================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const menuButonu = document.getElementById("menuButonu");
+    const yanMenu = document.getElementById("yanMenu");
+    const menuKatmani = document.getElementById("menuKatmani");
+
+    // Menüyü açıp kapat
+    function menuDurumunuDegistir(acik) {
+
+        document.body.classList.toggle("menu-acik", acik);
+
+        menuButonu.setAttribute("aria-expanded", acik);
+        yanMenu.setAttribute("aria-hidden", !acik);
+    }
+
+    // Hamburger butonu
+    menuButonu.addEventListener("click", function () {
+
+        const menuAcik = document.body.classList.contains("menu-acik");
+
+        menuDurumunuDegistir(!menuAcik);
+
+    });
+
+    // Menü dışına tıklanınca kapat
+    menuKatmani.addEventListener("click", function () {
+
+        menuDurumunuDegistir(false);
+
+    });
+
+    // Escape tuşuyla kapat
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+            menuDurumunuDegistir(false);
+        }
+
+    });
+
+
+    // Bugünün tarihini göster
+    const tarihAlani = document.getElementById("navbarTarih");
+
+    if (tarihAlani) {
+
+        const bugun = new Date();
+
+        tarihAlani.textContent = bugun.toLocaleDateString("tr-TR", {
+            timeZone: "Europe/Istanbul",
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+    }
+
+});
+
+</script>

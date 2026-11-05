@@ -1,0 +1,26 @@
+/* GENEL SAYFA AYARLARI */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #172536;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}

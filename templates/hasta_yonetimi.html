@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hasta Yönetimi | Diyaliz Takip</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='hasta_yonetimi.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='ortak_navbar.css') }}">
+</head>
+
+<body>
+
+  {% set aktif_sayfa = 'ana_sayfa' %}
+  {% include 'admin_ust_menu.html' %}
+
+  <!-- Ana içerik -->
+  <main class="ana-icerik">
+
+    <section class="sayfa-baslik">
+      <div>
+        <h2>Hasta Durum Tablosu</h2>
+      </div>
+    </section>
+
+    <!-- HASTA BİLGİLERİ POPUP -->
+    <div class="hasta-bilgi-popup-katmani" id="hastaBilgiPopup" hidden>
+
+      <section class="hasta-bilgi-kutusu" role="dialog" aria-modal="true">
+
+        <div class="hasta-bilgi-ust">
+          <div>
+            <h3>Hasta Bilgileri</h3>
+            <p id="bilgiHastaAdi">Hasta adı</p>
+          </div>
+
+          <button type="button" id="bilgiKapatButonu">✕</button>
+        </div>
+
+        <div class="hasta-bilgi-grid">
+
+          <div class="bilgi-alani">
+            <span>Hasta No</span>
+            <strong id="bilgiHastaNo">-</strong>
+          </div>
+
+          <div class="bilgi-alani">
+            <span>Diyaliz Durumu</span>
+            <strong id="bilgiDurum">-</strong>
+          </div>
+
+        </div>
+
+      </section>
+    </div>
+
+
+    <!-- TABLO ALANI -->
+    <section class="tablo-panel">
+
+      <div class="tablo-ust">
+
+        <!-- GRUP FİLTRELERİ -->
+        <div class="grup-filtreleri">
+
+          <button type="button" class="grup-buton aktif" data-grup="tum">
+            TÜMÜ
+          </button>
+
+          <button type="button" class="grup-buton" data-grup="1">
+            GRUP 1
+          </button>
+
+          <button type="button" class="grup-buton" data-grup="2">
+            GRUP 2
+          </button>
+
+          <button type="button" class="grup-buton" data-grup="Misafir">
+            MSFR
+          </button>
+
+        </div>
+
+        <!-- HASTA EKLE BUTONU -->
+        <button type="button" class="hasta-ekle-buton" id="hastaEkleButonu">
+          <span>＋</span> Hasta Ekle
+        </button>
+
+      </div>
+
+
+      <!-- HASTA EKLEME POPUP -->
+      <div class="hasta-ekle-katmani" id="hastaEklePopup" hidden>
+
+        <div class="hasta-ekle-kutusu">
+
+          <div class="hasta-ekle-ust">
+
+            <div class="hasta-ekle-ikon">
+              ＋
+            </div>
+
+            <div>
+              <h3>Yeni Hasta Ekle</h3>
+              <p>Hasta bilgilerini eksiksiz doldurunuz.</p>
+            </div>
+
+            <button type="button" class="popup-kapat" id="hastaEkleKapat">
+              ✕
+            </button>
+
+          </div>
+
+
+          <form id="hastaEkleForm">
+
+            <!-- HASTA NO -->
+            <div class="hasta-form-alani">
+
+              <label for="hastaNo">Hasta No</label>
+
+              <input type="number" id="hastaNo" name="hasta_no" placeholder="Örn: 1001" min="1" required>
+
+            </div>
+
+
+            <!-- AD SOYAD -->
+            <div class="hasta-form-alani">
+
+              <label for="adSoyad">Ad-Soyad</label>
+
+              <input type="text" id="adSoyad" name="ad_soyad" placeholder="Hastanın adını ve soyadını giriniz"
+                maxlength="150" required>
+
+            </div>
+
+
+            <!-- GRUP NO -->
+            <div class="hasta-form-alani">
+
+              <label for="grupNo">Grup No</label>
+
+              <select id="grupNo" name="grup_no" required>
+
+                <option value="">Grup seçiniz</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="Misafir">Misafir</option>
+
+              </select>
+
+            </div>
+
+
+            <!-- BİLGİLENDİRME -->
+            <div class="hasta-form-bilgi">
+
+              <span>ⓘ</span>
+
+              Hasta kaydı oluşturulduktan sonra ana tablodaki
+              hasta listesine eklenecektir.
+
+            </div>
+
+
+            <!-- BUTONLAR -->
+            <div class="hasta-form-butonlar">
+
+              <button type="button" class="vazgec-buton" id="hastaEkleVazgec">
+                Vazgeç
+              </button>
+
+              <button type="submit" class="hasta-kaydet-buton">
+                <span>✓</span> Hastayı Kaydet
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+
+      <!-- HASTA TABLOSU -->
+      <div class="tablo-kaydirma">
+
+        <table class="hasta-tablosu">
+
+          <thead>
+            <tr>
+              <th>Hasta No</th>
+              <th>Ad-Soyad</th>
+              <th>Grup No</th>
+              <th>Durumlar</th>
+              <th>Süre</th>
+              <th>Onay</th>
+            </tr>
+          </thead>
+
+
+          <tbody id="hastaTabloGovdesi">
+
+            {% for hasta in hastalar %}
+
+            <tr data-hasta-no="{{ hasta['hasta_no'] }}" data-hasta-adi="{{ hasta['ad_soyad'] }}"
+              data-grup-no="{{ hasta['grup_no'] }}">
+
+              <td>{{ hasta['hasta_no'] }}</td>
+
+              <td class="hasta-adi">
+                {{ hasta['ad_soyad'] }}
+              </td>
+
+              <td>{{ hasta['grup_no'] }}</td>
+
+
+              <!-- DURUM SEÇİMİ -->
+              <td>
+
+                <select class="tablo-secimi durum-sec">
+
+                  <option value="">Durum seçiniz</option>
+
+                  <option value="hazirlaniyor" {% if hasta['durum']=='hazirlaniyor' %}selected{% endif %}>
+                    Hasta katater takılması işlemi için hazırlanıyor.
+                  </option>
+
+                  <option value="basladi" {% if hasta['durum']=='basladi' %}selected{% endif %}>
+                    Hastanın diyaliz işlemi başladı.
+                  </option>
+
+                  <option value="bitti" {% if hasta['durum']=='bitti' %}selected{% endif %}>
+                    Hastanın diyaliz tedavisi bitti.
+                  </option>
+
+                  <option value="transfer" {% if hasta['durum']=='transfer' %}selected{% endif %}>
+                    Hasta kliniğe transfer edildi.
+                  </option>
+
+                  <option value="iptal" {% if hasta['durum']=='iptal' %}selected{% endif %}>
+                    Diyaliz iptal edildi.
+                  </option>
+
+                </select>
+
+              </td>
+
+
+              <!-- SÜRE SEÇİMİ -->
+              <td>
+
+                <select class="tablo-secimi sure-sec">
+
+                  <option value="">Süre seçiniz</option>
+
+                  <option value="30dk" {% if hasta['sure']=='30dk' %}selected{% endif %}>
+                    30 dk
+                  </option>
+
+                  <option value="1saat" {% if hasta['sure']=='1saat' %}selected{% endif %}>
+                    1 saat
+                  </option>
+
+                  <option value="2saat" {% if hasta['sure']=='2saat' %}selected{% endif %}>
+                    2 saat
+                  </option>
+
+                  <option value="3saat" {% if hasta['sure']=='3saat' %}selected{% endif %}>
+                    3 saat
+                  </option>
+
+                  <option value="4saat" {% if hasta['sure']=='4saat' %}selected{% endif %}>
+                    4 saat
+                  </option>
+
+                  <option value="5saat" {% if hasta['sure']=='5saat' %}selected{% endif %}>
+                    5 saat
+                  </option>
+
+                  <option value="6saat" {% if hasta['sure']=='6saat' %}selected{% endif %}>
+                    6 saat
+                  </option>
+
+                </select>
+
+              </td>
+
+
+              <!-- ONAY BUTONU -->
+              <td>
+
+                <button type="button" class="onay-buton" title="Onayla">
+                  ✓
+                </button>
+
+              </td>
+
+            </tr>
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+
+        <!-- BOŞ TABLO MESAJI -->
+        <div class="bos-tablo" id="bosTablo" {% if hastalar %}hidden{% endif %}>
+
+          <div class="bos-tablo-ikon">▤</div>
+
+          <h3>Henüz hasta kaydı yok</h3>
+
+          <p>Hasta kayıtları eklendiğinde burada görüntülenecektir.</p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SAYFA ALTI -->
+    <footer class="sayfa-alt">
+      Diyaliz Takip Sistemi
+    </footer>
+
+  </main>
+
+
+  <!-- HASTA İŞLEMLERİ MENÜSÜ -->
+  <div id="hastaIslemMenusu" class="hasta-islem-menusu" hidden>
+
+    <button type="button" id="diyalizIptalButonu">
+      Diyalizi İptal Et
+    </button>
+
+  </div>
+
+
+  <!-- İPTAL ONAY PENCERESİ -->
+  <div id="iptalOnayPenceresi" class="modal-katmani" hidden>
+
+    <div class="modal-kutu" role="dialog" aria-modal="true" aria-labelledby="iptalBaslik">
+
+      <h3 id="iptalBaslik">Diyaliz İptali</h3>
+
+      <p id="iptalMesaji">
+        Hastanın diyalizini iptal etmek istediğinize emin misiniz?
+      </p>
+
+      <div class="modal-butonlar">
+
+        <button type="button" id="iptalVazgecButonu">
+          Vazgeç
+        </button>
+
+        <button type="button" id="iptalOnayButonu">
+          Evet, İptal Et
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+  <script>
+
+
+    // ----------------------------------------
+    // HASTA SATIRI OLUŞTURMA
+    // ----------------------------------------
+
+
+    function hastaSatiriOlustur(hasta) {
+
+      const satir = document.createElement("tr");
+
+      satir.dataset.hastaNo = hasta.hasta_no;
+      satir.dataset.hastaAdi = hasta.ad_soyad;
+      satir.dataset.grupNo = hasta.grup_no || "";
+
+      satir.innerHTML = `
+        <td>${guvenliMetin(hasta.hasta_no)}</td>
+
+        <td class="hasta-adi">
+            ${guvenliMetin(hasta.ad_soyad)}
+        </td>
+
+        <td>${guvenliMetin(hasta.grup_no || "-")}</td>
+
+        <td>
+            <select class="tablo-secimi durum-sec">
+                <option value="">Durum seçiniz</option>
+                <option value="hazirlaniyor">Hasta katater takılması işlemi için hazırlanıyor.</option>
+                <option value="basladi">Hastanın diyaliz işlemi başladı.</option>
+                <option value="bitti">Hastanın diyaliz tedavisi bitti.</option>
+                <option value="transfer">Hasta kliniğe transfer edildi.</option>
+                <option value="iptal">Diyaliz iptal edildi.</option>
+            </select>
+        </td>
+
+        <td>
+            <select class="tablo-secimi sure-sec">
+                <option value="">Süre seçiniz</option>
+                <option value="30dk">30 dk</option>
+                <option value="1saat">1 saat</option>
+                <option value="2saat">2 saat</option>
+                <option value="3saat">3 saat</option>
+                <option value="4saat">4 saat</option>
+                <option value="5saat">5 saat</option>
+                <option value="6saat">6 saat</option>
+            </select>
+        </td>
+
+        <td>
+            <button type="button" class="onay-butonu">
+                ✓
+            </button>
+        </td>
+    `;
+
+      document.getElementById("hastaTabloGovdesi").appendChild(satir);
+      hastaFiltrele();
+
+
+      const bosTablo = document.getElementById("bosTablo");
+
+      if (bosTablo) {
+        bosTablo.hidden = true;
+      }
+    }
+
+
+
+    // ----------------------------------------
+    // GÜVENLİ METİN
+    // ----------------------------------------
+
+    function guvenliMetin(metin) {
+      return String(metin ?? "").replace(/[&<>"']/g, karakter => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[karakter]);
+    }
+
+
+    // ----------------------------------------
+    // HASTA İŞLEM MENÜSÜ
+    // ----------------------------------------
+
+    const hastaIslemMenusu = document.getElementById("hastaIslemMenusu");
+    const diyalizIptalButonu = document.getElementById("diyalizIptalButonu");
+    const iptalOnayPenceresi = document.getElementById("iptalOnayPenceresi");
+    const iptalVazgecButonu = document.getElementById("iptalVazgecButonu");
+    const iptalOnayButonu = document.getElementById("iptalOnayButonu");
+    const iptalMesaji = document.getElementById("iptalMesaji");
+
+    let secilenHastaSatiri = null;
+
+    const hastaTabloGovdesi = document.getElementById("hastaTabloGovdesi");
+
+    async function hastaBilgileriniKaydet(satir, durumDegeri = null) {
+
+      const hastaNo = satir.dataset.hastaNo;
+
+      const durumSecimi = satir.querySelector(".durum-sec");
+      const sureSecimi = satir.querySelector(".sure-sec");
+
+      const durum = durumDegeri !== null
+        ? durumDegeri
+        : durumSecimi.value;
+
+      const sure = sureSecimi.value;
+
+      try {
+
+        const cevap = await fetch("/hasta-durum-guncelle", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            hasta_no: hastaNo,
+            durum: durum,
+            sure: sure
+          })
+        });
+
+        const sonuc = await cevap.json();
+
+        if (!cevap.ok || !sonuc.basarili) {
+          alert(sonuc.mesaj || "Hasta bilgileri kaydedilemedi.");
+          return false;
+        }
+
+        return true;
+
+      } catch (hata) {
+
+        console.error("Kayıt hatası:", hata);
+        alert("Sunucuya bağlanılamadı. Lütfen tekrar deneyiniz.");
+
+        return false;
+      }
+    }
+
+
+    // Durum veya süre değiştiğinde otomatik kaydet
+    hastaTabloGovdesi.addEventListener("change", async function (olay) {
+
+      if (
+        !olay.target.classList.contains("durum-sec") &&
+        !olay.target.classList.contains("sure-sec")
+      ) {
+        return;
+      }
+
+      const satir = olay.target.closest("tr");
+
+      if (!satir) {
+        return;
+      }
+
+      const kaydedildi = await hastaBilgileriniKaydet(satir);
+
+      if (kaydedildi) {
+        console.log("Hasta durumu ve süresi kaydedildi.");
+      }
+
+    });
+
+    // Sağ tıklama
+    hastaTabloGovdesi.addEventListener("contextmenu", function (olay) {
+
+      const satir = olay.target.closest("tr");
+
+      if (!satir || !this.contains(satir)) {
+        return;
+      }
+
+      olay.preventDefault();
+
+      secilenHastaSatiri = satir;
+
+      const hastaAdi = satir.dataset.hastaAdi || "Seçilen hasta";
+
+      diyalizIptalButonu.textContent = "Diyalizi İptal Et";
+
+      iptalMesaji.textContent =
+        hastaAdi +
+        " adlı hastanın diyalizini iptal etmek istediğinize emin misiniz?";
+
+      hastaIslemMenusu.hidden = false;
+
+      const menuGenisligi = 200;
+      const menuYuksekligi = 55;
+
+      hastaIslemMenusu.style.left =
+        Math.min(olay.clientX, window.innerWidth - menuGenisligi - 10) + "px";
+
+      hastaIslemMenusu.style.top =
+        Math.min(olay.clientY, window.innerHeight - menuYuksekligi - 10) + "px";
+    });
+
+
+    // İptal seçeneği
+    diyalizIptalButonu.addEventListener("click", function () {
+
+      hastaIslemMenusu.hidden = true;
+      iptalOnayPenceresi.hidden = false;
+
+    });
+
+
+    // Vazgeç
+    iptalVazgecButonu.addEventListener("click", function () {
+
+      iptalOnayPenceresi.hidden = true;
+      secilenHastaSatiri = null;
+
+    });
+
+
+    iptalOnayButonu.addEventListener("click", async function () {
+
+      if (!secilenHastaSatiri) {
+        return;
+      }
+
+      const kaydedildi = await hastaBilgileriniKaydet(
+        secilenHastaSatiri,
+        "iptal"
+      );
+
+      if (!kaydedildi) {
+        return;
+      }
+
+      const durumSecimi =
+        secilenHastaSatiri.querySelector(".durum-sec");
+
+      if (durumSecimi) {
+        durumSecimi.value = "iptal";
+      }
+
+      secilenHastaSatiri.classList.add("diyaliz-iptal");
+
+      iptalOnayPenceresi.hidden = true;
+      hastaIslemMenusu.hidden = true;
+
+      alert("Diyaliz iptal edildi ve veritabanına kaydedildi.");
+
+      secilenHastaSatiri = null;
+
+    });
+
+
+    // Menü dışına tıklanınca kapat
+    document.addEventListener("click", function (olay) {
+
+      if (!hastaIslemMenusu.contains(olay.target)) {
+        hastaIslemMenusu.hidden = true;
+      }
+
+    });
+
+
+    // Escape ile pencereleri kapat
+    document.addEventListener("keydown", function (olay) {
+
+      if (olay.key === "Escape") {
+
+        hastaIslemMenusu.hidden = true;
+        iptalOnayPenceresi.hidden = true;
+
+        secilenHastaSatiri = null;
+      }
+
+    });
+
+
+    // ----------------------------------------
+    // HASTA BİLGİLERİ
+    // ----------------------------------------
+
+    const hastaBilgiKutusu = document.getElementById("hastaBilgiPopup");
+
+
+    // Çift tıklama
+    hastaTabloGovdesi.addEventListener("dblclick", function (olay) {
+
+      const satir = olay.target.closest("tr");
+
+      if (!satir || !this.contains(satir)) {
+        return;
+      }
+
+      const hastaAdi = satir.dataset.hastaAdi || "";
+      const hastaNo = satir.dataset.hastaNo || "";
+
+
+      document.getElementById("bilgiHastaAdi").textContent = hastaAdi;
+      document.getElementById("bilgiHastaNo").textContent = hastaNo;
+
+
+      const durumSecimi = satir.querySelector(".durum-sec");
+
+      const seciliDurum = durumSecimi
+        ? durumSecimi.options[durumSecimi.selectedIndex].text
+        : "";
+
+      document.getElementById("bilgiDurum").textContent =
+        durumSecimi && durumSecimi.value
+          ? seciliDurum
+          : "Henüz seçilmedi";
+
+      hastaBilgiKutusu.hidden = false;
+
+    });
+
+
+    // Bilgi kutusunu kapat
+    document.getElementById("bilgiKapatButonu").addEventListener("click", function () {
+
+      hastaBilgiKutusu.hidden = true;
+
+    });
+
+
+    // ----------------------------------------
+    // HASTA EKLEME POPUP
+    // ----------------------------------------
+
+    const hastaEkleButonu = document.getElementById("hastaEkleButonu");
+    const hastaEklePopup = document.getElementById("hastaEklePopup");
+    const hastaEkleKapat = document.getElementById("hastaEkleKapat");
+    const hastaEkleVazgec = document.getElementById("hastaEkleVazgec");
+    const hastaEkleForm = document.getElementById("hastaEkleForm");
+
+
+
+    // Popup aç
+    hastaEkleButonu.addEventListener("click", function () {
+
+      hastaEklePopup.hidden = false;
+      document.getElementById("hastaNo").focus();
+
+    });
+
+
+    // Popup kapat
+    function hastaPopupKapat() {
+
+      hastaEklePopup.hidden = true;
+      hastaEkleForm.reset();
+
+    }
+
+    hastaEkleKapat.addEventListener("click", hastaPopupKapat);
+    hastaEkleVazgec.addEventListener("click", hastaPopupKapat);
+
+
+    // Popup dışına tıklanınca kapat
+    hastaEklePopup.addEventListener("click", function (olay) {
+
+      if (olay.target === hastaEklePopup) {
+        hastaPopupKapat();
+      }
+
+    });
+
+
+    // Hasta kaydet
+    hastaEkleForm.addEventListener("submit", async function (olay) {
+
+      olay.preventDefault();
+
+      const hastaNo = document.getElementById("hastaNo").value.trim();
+      const adSoyad = document.getElementById("adSoyad").value.trim();
+      const grupNo = document.getElementById("grupNo").value.trim();
+
+      if (!hastaNo || !adSoyad || !grupNo) {
+        alert("Lütfen bütün alanları doldurunuz.");
+        return;
+      }
+
+      try {
+
+        const cevap = await fetch("/hasta-ekle", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            hasta_no: hastaNo,
+            ad_soyad: adSoyad,
+            grup_no: grupNo
+          })
+        });
+
+        const sonuc = await cevap.json();
+
+        if (!cevap.ok || !sonuc.basarili) {
+          alert(sonuc.mesaj || "Hasta kaydedilemedi.");
+          return;
+        }
+
+        // Veritabanına kaydedilen hastayı tabloya ekle
+        hastaSatiriOlustur(sonuc.hasta);
+
+        hastaPopupKapat();
+
+        alert("Hasta başarıyla veritabanına kaydedildi.");
+
+      } catch (hata) {
+
+        console.error("Hasta ekleme hatası:", hata);
+        alert("Sunucuya bağlanılamadı. Hasta kaydedilemedi.");
+
+      }
+
+    });
+
+
+    // ----------------------------------------
+    // OTOMATİK HAFTALIK GRUP FİLTRELEME
+    // ----------------------------------------
+
+    const grupButonlari = document.querySelectorAll(".grup-buton");
+
+    let seciliGrup = "tum";
+
+    // Seçilen gruba göre hastaları göster
+    function hastaFiltrele() {
+
+      const hastaSatirlari = hastaTabloGovdesi.querySelectorAll("tr");
+
+      hastaSatirlari.forEach(satir => {
+
+        const grupNo = satir.dataset.grupNo;
+
+        if (seciliGrup === "tum" || grupNo === seciliGrup) {
+          satir.style.display = "";
+        } else {
+          satir.style.display = "none";
+        }
+
+      });
+
+      // Aktif buton görünümünü güncelle
+      grupButonlari.forEach(buton => {
+
+        buton.classList.toggle(
+          "aktif",
+          buton.dataset.grup === seciliGrup
+        );
+
+      });
+
+    }
+
+
+    // Haftanın gününe göre otomatik grup belirle
+    function gununGrubunuBelirle() {
+
+      const bugun = new Date().getDay();
+
+      switch (bugun) {
+
+        case 1: // Pazartesi
+        case 3: // Çarşamba
+        case 5: // Cuma
+          seciliGrup = "1";
+          break;
+
+        case 2: // Salı
+        case 4: // Perşembe
+        case 6: // Cumartesi
+          seciliGrup = "2";
+          break;
+
+        case 0: // Pazar
+          seciliGrup = "tum";
+          break;
+
+      }
+
+      hastaFiltrele();
+
+    }
+
+
+    // Manuel grup butonları
+    grupButonlari.forEach(buton => {
+
+      buton.addEventListener("click", function () {
+
+        seciliGrup = this.dataset.grup;
+
+        hastaFiltrele();
+
+      });
+
+    });
+
+
+    // Sayfa açıldığında otomatik filtreleme yap
+    gununGrubunuBelirle();
+
+
+
+  </script>
+</body>
+
+</html>

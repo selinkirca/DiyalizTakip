@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hasta Yönetimi | Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f7fb;
+            color: #172536;
+            font-family: Arial, sans-serif;
+        }
+
+        .admin-container {
+            width: 100%;
+            max-width: 1450px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .admin-header h1 {
+            margin: 0 0 8px;
+            font-size: 27px;
+        }
+
+        .admin-header p {
+            margin: 0;
+            color: #738195;
+        }
+
+        .admin-navigasyon {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .admin-nav-link {
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #dfe6ee;
+            color: #344054;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .admin-nav-link.aktif {
+            background: #0750ad;
+            color: white;
+            border-color: #0750ad;
+        }
+
+        .admin-card {
+            background: white;
+            border: 1px solid #dfe6ee;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 5px 20px rgba(23, 37, 54, 0.04);
+        }
+
+        .admin-card h2 {
+            margin: 0 0 22px;
+            font-size: 20px;
+        }
+
+        .hasta-ekle-form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .form-alani {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-alani label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .form-alani input,
+        .form-alani select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d7e0e4;
+            border-radius: 7px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .form-alani input:focus,
+        .form-alani select:focus {
+            outline: 2px solid #c5dcff;
+            border-color: #0750ad;
+        }
+
+        .ekle-buton {
+            grid-column: 1 / -1;
+            padding: 12px;
+            background: #0750ad;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .ekle-buton:hover {
+            background: #063d87;
+        }
+
+        .tablo-kaydirma {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .hasta-tablosu {
+            width: 100%;
+            min-width: 1050px;
+            border-collapse: collapse;
+        }
+
+        .hasta-tablosu th,
+        .hasta-tablosu td {
+            padding: 12px 10px;
+            border: 1px solid #dfe6ee;
+            text-align: left;
+        }
+
+        .hasta-tablosu th {
+            background: #edf3fa;
+            font-size: 13px;
+        }
+
+        .hasta-tablosu input,
+        .hasta-tablosu select {
+            width: 100%;
+            min-width: 100px;
+            padding: 9px;
+            border: 1px solid #d7e0e4;
+            border-radius: 6px;
+            font-size: 13px;
+            background: white;
+        }
+
+        .islem-butonlari {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+        }
+
+        .kaydet-buton,
+        .sil-buton {
+            padding: 9px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .kaydet-buton {
+            background: #e7f8ee;
+            color: #18864b;
+        }
+
+        .kaydet-buton:hover {
+            background: #c9f0d8;
+        }
+
+        .sil-buton {
+            background: #fff0f0;
+            color: #b42318;
+        }
+
+        .sil-buton:hover {
+            background: #ffdddd;
+        }
+
+        .message {
+            padding: 13px;
+            margin-bottom: 18px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .message.error {
+            background: #fff0f0;
+            color: #a52a2a;
+        }
+
+        .message.success {
+            background: #e7f8ee;
+            color: #18864b;
+        }
+
+        .empty-message {
+            color: #738195;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .cikis-buton {
+            padding: 11px 15px;
+            border: 1px solid #f0caca;
+            border-radius: 8px;
+            background: #fff0f0;
+            color: #b42318;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 700px) {
+
+            .admin-container {
+                padding: 20px 12px;
+            }
+
+            .admin-header h1 {
+                font-size: 21px;
+            }
+
+            .hasta-ekle-form {
+                grid-template-columns: 1fr;
+            }
+
+            .ekle-buton {
+                grid-column: auto;
+            }
+
+            .admin-card {
+                padding: 16px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_ortak.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_paneli.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='ortak_navbar.css') }}">
+</head>
+
+<body>
+    {% set aktif_sayfa = 'hasta' %}
+    {% include 'admin_ust_menu.html' %}
+
+    <main class="admin-container">
+        <div class="admin-sayfa-baslik hasta-baslik-alani">
+
+            <div>
+                <h1>Hasta Bilgilerini Düzenle</h1>
+                <p>Hasta kayıtlarını ekleyin, silin ve bilgilerini güncelleyin.</p>
+            </div>
+
+            <div class="toplam-hasta-kutu">
+                <span class="toplam-hasta-baslik">Toplam Hasta Sayısı</span>
+                <span class="toplam-hasta-sayi">{{ hastalar|length }}</span>
+            </div>
+
+        </div>
+        <!-- BİLDİRİMLER -->
+
+        {% with mesajlar = get_flashed_messages(with_categories=true) %}
+
+        {% for kategori, mesaj in mesajlar %}
+
+        <div class="message {{ kategori }}">
+            {{ mesaj }}
+        </div>
+
+        {% endfor %}
+
+        {% endwith %}
+
+
+        <!-- HASTA EKLEME -->
+
+        <section class="admin-card">
+
+            <h2>Yeni Hasta Ekle</h2>
+
+            <form method="POST" action="{{ url_for('admin_hasta_ekle') }}" class="hasta-ekle-form">
+
+                <div class="form-alani">
+                    <label for="hasta_no">Hasta No</label>
+
+                    <input type="text" id="hasta_no" name="hasta_no" maxlength="12" pattern="[0-9]{1,12}"
+                        inputmode="numeric"
+                        title="Hasta numarası yalnızca rakamlardan oluşmalı ve en fazla 12 basamaklı olmalıdır."
+                        required>
+                </div>
+
+                <div class="form-alani">
+                    <label for="ad_soyad">Ad-Soyad</label>
+
+                    <input type="text" id="ad_soyad" name="ad_soyad" maxlength="50" required>
+                </div>
+
+                <div class="form-alani">
+
+                    <label for="grup_no">Grup No</label>
+
+                    <select id="grup_no" name="grup_no" required>
+
+                        <option value="">Grup seçiniz</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="Misafir">Misafir</option>
+
+                    </select>
+
+                </div>
+
+
+                <button type="submit" class="ekle-buton">
+                    + Hastayı Kaydet
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- HASTA LİSTESİ -->
+
+        <section class="admin-card">
+
+            <h2>Kayıtlı Hastalar</h2>
+
+            <div class="tablo-kaydirma">
+
+                <table class="hasta-tablosu">
+
+                    <thead>
+
+                        <tr>
+                            <th>Hasta No</th>
+                            <th>Ad-Soyad</th>
+                            <th>Grup No</th>
+                            <th>Durum</th>
+                            <th>Süre</th>
+                            <th>İşlemler</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for hasta in hastalar %}
+
+                        {% set form_id = "guncelle_" ~ loop.index %}
+
+                        <tr>
+
+                            <td>
+                                <input type="text" name="hasta_no" value="{{ hasta['hasta_no'] }}" maxlength="12"
+                                    pattern="[0-9]{1,12}" inputmode="numeric" title="En fazla 12 rakam girilebilir."
+                                    required form="{{ form_id }}">
+                            </td>
+
+                            <td>
+                                <input type="text" name="ad_soyad" value="{{ hasta['ad_soyad'] }}" maxlength="50"
+                                    required form="{{ form_id }}">
+                            </td>
+
+                            <td>
+                                <select name="grup_no" required form="{{ form_id }}">
+
+                                    <option value="1" {% if hasta['grup_no']|string|trim=='1' %}selected{% endif %}>
+                                        1
+                                    </option>
+
+                                    <option value="2" {% if hasta['grup_no']|string|trim=='2' %}selected{% endif %}>
+                                        2
+                                    </option>
+
+                                    <option value="Misafir" {% if hasta['grup_no']|string|trim=='Misafir' %}selected{%
+                                        endif %}>
+                                        Misafir
+                                    </option>
+
+                                </select>
+                            </td>
+
+                            <td>
+                                <select name="durum" form="{{ form_id }}">
+
+                                    <option value="">Durum seçiniz</option>
+
+                                    <option value="hazirlaniyor" {% if hasta['durum']=='hazirlaniyor' %}selected{% endif
+                                        %}>
+                                        Hazırlanıyor
+                                    </option>
+
+                                    <option value="basladi" {% if hasta['durum']=='basladi' %}selected{% endif %}>
+                                        Diyaliz başladı
+                                    </option>
+
+                                    <option value="bitti" {% if hasta['durum']=='bitti' %}selected{% endif %}>
+                                        Tedavi bitti
+                                    </option>
+
+                                    <option value="transfer" {% if hasta['durum']=='transfer' %}selected{% endif %}>
+                                        Kliniğe transfer edildi
+                                    </option>
+
+                                    <option value="iptal" {% if hasta['durum']=='iptal' %}selected{% endif %}>
+                                        Diyaliz iptal edildi
+                                    </option>
+
+                                </select>
+                            </td>
+
+                            <td>
+                                <select name="sure" form="{{ form_id }}">
+
+                                    <option value="">Süre seçiniz</option>
+
+                                    <option value="30dk" {% if hasta['sure']=='30dk' %}selected{% endif %}>
+                                        30 dk
+                                    </option>
+
+                                    {% for saat in range(1, 7) %}
+
+                                    <option value="{{ saat }}saat" {% if hasta['sure']==(saat|string ~ 'saat' )
+                                        %}selected{% endif %}>
+                                        {{ saat }} saat
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+                            </td>
+
+                            <td>
+
+                                <div class="islem-butonlari">
+
+                                    <form id="{{ form_id }}" method="POST"
+                                        action="{{ url_for('admin_hasta_guncelle', eski_hasta_no=hasta['hasta_no']) }}">
+                                        <button type="submit" class="kaydet-buton">
+                                            ✓ Kaydet
+                                        </button>
+                                    </form>
+
+                                    <form method="POST"
+                                        action="{{ url_for('admin_hasta_sil', hasta_no=hasta['hasta_no']) }}"
+                                        onsubmit="return confirm('Bu hastayı silmek istediğinize emin misiniz?');">
+                                        <button type="submit" class="sil-buton">
+                                            ✕ Hastayı Sil
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="6" class="empty-message">
+                                Henüz hasta kaydı bulunmuyor.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
