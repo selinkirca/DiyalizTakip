@@ -346,10 +346,34 @@
 
         <section class="admin-card">
 
-            <h2>Kayıtlı Hastalar</h2>
+            <div class="kayitli-hastalar-baslik">
+
+                <h2>Kayıtlı Hastalar</h2>
+
+                <div class="hasta-arama-kutusu">
+
+                    <span class="arama-ikonu">⌕</span>
+
+                    <input
+                        type="search"
+                        id="hastaArama"
+                        placeholder="Hasta No veya Ad Soyad Ara..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        type="button"
+                        id="aramaTemizle"
+                        class="arama-temizle"
+                        title="Aramayı temizle">
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
 
             <div class="tablo-kaydirma">
-
                 <table class="hasta-tablosu">
 
                     <thead>
@@ -499,6 +523,106 @@
 
     </main>
 
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const aramaKutusu = document.getElementById("hastaArama");
+            const temizleButonu = document.getElementById("aramaTemizle");
+
+            const hastaTablosu = document.querySelector(".hasta-tablosu");
+            const tabloGovdesi = hastaTablosu.querySelector("tbody");
+
+            // Hasta kayıtlarının bulunduğu satırları al
+            const hastaSatirlari = Array.from(
+                tabloGovdesi.querySelectorAll("tr")
+            ).filter(satir => {
+                return satir.querySelector('input[name="hasta_no"]') &&
+                    satir.querySelector('input[name="ad_soyad"]');
+            });
+
+            // Arama sonucunda bulunamayan hastalar için satır oluştur
+            const sonucSatiri = document.createElement("tr");
+
+            const sonucHucre = document.createElement("td");
+            sonucHucre.colSpan = 6;
+            sonucHucre.className = "empty-message";
+            sonucHucre.textContent = "Aramanızla eşleşen hasta bulunamadı.";
+
+            sonucSatiri.appendChild(sonucHucre);
+
+            // Arama işlemi
+            function hastalariFiltrele() {
+
+                const arananDeger = aramaKutusu.value
+                    .trim()
+                    .toLocaleLowerCase("tr-TR");
+
+                let bulunanHastaSayisi = 0;
+
+                hastaSatirlari.forEach(satir => {
+
+                    const hastaNo = satir
+                        .querySelector('input[name="hasta_no"]')
+                        .value
+                        .trim()
+                        .toLocaleLowerCase("tr-TR");
+
+                    const adSoyad = satir
+                        .querySelector('input[name="ad_soyad"]')
+                        .value
+                        .trim()
+                        .toLocaleLowerCase("tr-TR");
+
+                    // Hasta numarası veya ad-soyad kontrolü
+                    const eslesme =
+                        hastaNo.startsWith(arananDeger) ||
+                        adSoyad.includes(arananDeger);
+
+                    satir.style.display = eslesme ? "" : "none";
+
+                    if (eslesme) {
+                        bulunanHastaSayisi++;
+                    }
+
+                });
+
+                // Arama kutusu doluysa temizleme butonunu göster
+                temizleButonu.style.display =
+                    arananDeger ? "block" : "none";
+
+                // Sonuç bulunamadığında mesaj göster
+                if (arananDeger && bulunanHastaSayisi === 0) {
+
+                    if (!sonucSatiri.isConnected) {
+                        tabloGovdesi.appendChild(sonucSatiri);
+                    }
+
+                } else {
+
+                    sonucSatiri.remove();
+
+                }
+
+            }
+
+            // Yazdıkça arama yap
+            aramaKutusu.addEventListener("input", hastalariFiltrele);
+
+            // Aramayı temizle
+            temizleButonu.addEventListener("click", function () {
+
+                aramaKutusu.value = "";
+
+                hastalariFiltrele();
+
+                aramaKutusu.focus();
+
+            });
+
+        });
+
+    </script>
 </body>
 
 </html>
