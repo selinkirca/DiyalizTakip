@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Diyaliz Takip | Hasta Bilgilendirme</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='tv_ekrani.css') }}">
+</head>
+
+<body>
+
+    <main class="tv-container">
+
+        <header class="tv-header">
+            <div class="logo-alani">
+                <div class="logo-icon">+</div>
+
+                <div>
+                    <h1>DİYALİZ TAKİP</h1>
+                    <p>HASTA BİLGİLENDİRME EKRANI</p>
+                </div>
+            </div>
+
+            <div class="canli-alani">
+                <span class="canli-nokta"></span>
+                CANLI BİLGİLENDİRME
+            </div>
+        </header>
+
+        <section id="hastaListesi" class="hasta-listesi">
+
+            <div class="bilgi-mesaji">
+                Hasta bilgileri yükleniyor...
+            </div>
+
+        </section>
+
+        <footer class="tv-footer">
+            <span id="baglantiDurumu">Bağlantı kuruluyor...</span>
+            <span>Hasta bilgileriniz gizlilik ilkeleri doğrultusunda gösterilmektedir.</span>
+        </footer>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='tv_ekrani.js') }}"></script>
+
+</body>
+</html>

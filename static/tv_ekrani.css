@@ -1,0 +1,248 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: #eef2f7;
+    color: #17243a;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.tv-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 35px 55px 22px;
+    max-width: 1900px;
+    margin: 0 auto;
+}
+
+.tv-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 25px;
+    border-bottom: 2px solid #dce3ec;
+}
+
+.logo-alani {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+}
+
+.logo-icon {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: #173d68;
+    color: white;
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.logo-alani h1 {
+    font-size: 30px;
+    letter-spacing: 1.5px;
+    color: #173d68;
+}
+
+.logo-alani p {
+    margin-top: 6px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #718096;
+    font-weight: bold;
+}
+
+.canli-alani {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 20px;
+    border-radius: 30px;
+    background: #e1f5eb;
+    color: #18794e;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.canli-nokta {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #20a464;
+    box-shadow: 0 0 0 5px #c7ead8;
+}
+
+.bilgi-alani {
+    text-align: center;
+    margin: 30px 0;
+}
+
+.bilgi-alani h2 {
+    font-size: 32px;
+    color: #1d3553;
+    letter-spacing: 1px;
+}
+
+.bilgi-alani p {
+    margin-top: 10px;
+    color: #718096;
+    font-size: 17px;
+}
+
+.hasta-listesi {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    flex: 1;
+    align-content: start;
+}
+
+.hasta-karti {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 105px;
+    padding: 17px 28px;
+    background: white;
+    border-radius: 15px;
+    border: 1px solid #e1e7ef;
+    border-left: 9px solid #4778ad;
+    box-shadow: 0 5px 18px rgba(30, 55, 85, 0.07);
+}
+
+.hasta-karti {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 145px;
+    padding: 25px 30px;
+    background: white;
+    border-radius: 18px;
+    border: 1px solid #e1e7ef;
+    border-left: 9px solid #4778ad;
+    box-shadow: 0 5px 18px rgba(30, 55, 85, 0.07);
+}
+
+.hasta-bilgisi {
+    min-width: 0;
+}
+
+.hasta-etiketi {
+    color: #8794a5;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+}
+
+.hasta-adi {
+    color: #1d3553;
+    font-size: clamp(24px, 2.2vw, 36px);
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.durum-etiketi {
+    max-width: 48%;
+    padding: 13px 18px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: clamp(15px, 1.4vw, 21px);
+    font-weight: bold;
+    line-height: 1.35;
+}
+
+.durum-hazirlaniyor {
+    border-left-color: #e5a52e;
+}
+
+.durum-hazirlaniyor .durum-etiketi {
+    background: #fff3d8;
+    color: #996400;
+}
+
+.durum-basladi {
+    border-left-color: #269b68;
+}
+
+.durum-basladi .durum-etiketi {
+    background: #dcf5e8;
+    color: #18794e;
+}
+
+.durum-bitti {
+    border-left-color: #4778ad;
+}
+
+.durum-bitti .durum-etiketi {
+    background: #e3effb;
+    color: #285b91;
+}
+
+.durum-transfer {
+    border-left-color: #8b6ac4;
+}
+
+.durum-transfer .durum-etiketi {
+    background: #eee7fb;
+    color: #6945a5;
+}
+
+.durum-iptal {
+    border-left-color: #d45b5b;
+}
+
+.durum-iptal .durum-etiketi {
+    background: #fde6e6;
+    color: #b33131;
+}
+
+.bilgi-mesaji {
+    grid-column: 1 / -1;
+    padding: 45px 20px;
+    text-align: center;
+    background: white;
+    border-radius: 18px;
+    color: #718096;
+    font-size: 23px;
+}
+
+.tv-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 25px;
+    padding-top: 17px;
+    border-top: 1px solid #dce3ec;
+    color: #8794a5;
+    font-size: 13px;
+}
+
+@media (max-width: 900px) {
+    .tv-container {
+        padding: 22px;
+    }
+
+    .tv-header {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+    }
+
+    .tv-footer {
+        flex-direction: column;
+    }
+}

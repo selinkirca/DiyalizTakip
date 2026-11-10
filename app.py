@@ -700,6 +700,69 @@ def logout():
 
 
 # --------------------------------------------------
+# TELEVİZYON EKRANI API
+# --------------------------------------------------
+
+# --------------------------------------------------
+# TELEVİZYON EKRANI API
+# --------------------------------------------------
+
+def hasta_adi_gizle(ad_soyad):
+    kelimeler = ad_soyad.split()
+
+    gizli_kelimeler = [
+        kelime[:2].upper() + "****"
+        for kelime in kelimeler
+    ]
+
+    return " ".join(gizli_kelimeler)
+
+
+@app.route("/api/hasta-durumlari")
+def tv_hasta_durumlari():
+
+    try:
+        with veritabani_baglantisi() as baglanti:
+
+            hastalar = baglanti.execute("""
+                SELECT ad_soyad, durum
+                FROM hastalar
+                WHERE durum IS NOT NULL
+                  AND durum != ''
+                ORDER BY  hasta_no
+            """).fetchall()
+
+        hasta_listesi = [
+            {
+                "ad_soyad": hasta_adi_gizle(hasta["ad_soyad"]),
+                "durum": hasta["durum"]
+            }
+            for hasta in hastalar
+        ]
+
+        return jsonify({
+            "basarili": True,
+            "hastalar": hasta_listesi
+        })
+
+    except sqlite3.Error as hata:
+        print("TV veri çekme hatası:", hata)
+
+        return jsonify({
+            "basarili": False,
+            "mesaj": "Hasta bilgileri alınamadı."
+        }), 500
+
+
+# --------------------------------------------------
+# TELEVİZYON EKRANI
+# --------------------------------------------------
+
+@app.route("/tv")
+def tv_ekrani():
+    return render_template("tv_ekrani.html")
+
+# --------------------------------------------------
 # UYGULAMAYI BAŞLAT
 # --------------------------------------------------
 
