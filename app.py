@@ -3,8 +3,6 @@ import os
 import sqlite3
 from pathlib import Path
 from functools import wraps
-
-
 from flask import (
     Flask,
     render_template,
@@ -38,6 +36,7 @@ if not app.config["SECRET_KEY"]:
 DB_PATH = Path(__file__).resolve().parent / "diyaliz.db"
 
 
+
 # --------------------------------------------------
 # VERİTABANI BAĞLANTISI
 # --------------------------------------------------
@@ -69,6 +68,26 @@ def hasta_sutunlarini_hazirla():
                 ADD COLUMN sure TEXT DEFAULT ''
             """)
 
+def islem_kaydi_ekle(
+    islem_turu,
+    islem_aciklamasi,
+    hedef_turu=None,
+    hedef_id=None,
+    onceki_deger=None,
+    yeni_deger=None
+):
+
+    islem_kaydet(
+        kullanici_id=session.get("sekreter_id"),
+        kullanici_adi=session.get("kullanici_adi"),
+        kullanici_rolu=session.get("rol"),
+        islem_turu=islem_turu,
+        islem_aciklamasi=islem_aciklamasi,
+        hedef_turu=hedef_turu,
+        hedef_id=hedef_id,
+        onceki_deger=onceki_deger,
+        yeni_deger=yeni_deger
+    )
 
 hasta_sutunlarini_hazirla()
 
@@ -685,4 +704,4 @@ def logout():
 # --------------------------------------------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,host="0.0.0.0", port=5000)

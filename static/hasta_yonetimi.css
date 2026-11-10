@@ -1480,3 +1480,28 @@ body {
     }
 
 }
+
+.hasta-guncelle-buton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #e8edf5;
+    color: #34445b;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.hasta-guncelle-buton:hover {
+    background: #d8e0ec;
+}
+.hasta-buton-grubu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

@@ -92,6 +92,7 @@
 
             <div class="table-wrapper">
 
+                
                 <table class="admin-table">
 
                     <thead>
@@ -99,6 +100,7 @@
                             <th>#</th>
                             <th>Kullanıcı Adı</th>
                             <th>Yetki</th>
+                            <th>İşlem</th>
                         </tr>
                     </thead>
 
@@ -114,11 +116,24 @@
                             <td>
                                 <span class="role-label">Sekreter</span>
                             </td>
+
+                            <td>
+                                <form method="POST"
+                                    action="{{ url_for('kullanici_sil', kullanici_id=kullanici['id']) }}"
+                                    onsubmit="return confirm('Bu sekreter hesabını silmek istediğinizden emin misiniz?');">
+
+                                    <button type="submit" class="sil-button">
+                                        Sil
+                                    </button>
+
+                                </form>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>
 
                 </table>
+
 
             </div>
 

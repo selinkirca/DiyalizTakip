@@ -81,12 +81,17 @@
           </button>
 
         </div>
+        <div class="hasta-buton-grubu">
 
-        <!-- HASTA EKLE BUTONU -->
-        <button type="button" class="hasta-ekle-buton" id="hastaEkleButonu">
-          <span>＋</span> Hasta Ekle
-        </button>
+            <button type="button" class="hasta-guncelle-buton" id="hastaGuncelleButonu">
+                <span>↻</span> Güncelle
+            </button>
 
+            <button type="button" class="hasta-ekle-buton" id="hastaEkleButonu">
+                <span>＋</span> Hasta Ekle
+            </button>
+
+        </div>
       </div>
 
 
@@ -120,7 +125,7 @@
 
               <label for="hastaNo">Hasta No</label>
 
-              <input type="number" id="hastaNo" name="hasta_no" placeholder="Örn: 1001" min="1" required>
+              <input type="text" id="hastaNo" maxlength="12" pattern="[0-9]{12}"  name="hasta_no" placeholder="Örn: 1001" min="1" required>
 
             </div>
 
@@ -211,7 +216,10 @@
               <td>{{ hasta['hasta_no'] }}</td>
 
               <td class="hasta-adi">
-                {{ hasta['ad_soyad'] }}
+                  {% set kelimeler = hasta['ad_soyad'].split() %}
+                  {% for kelime in kelimeler %}
+                      {{ kelime[:2] }}{{ '*' * (kelime|length - 2) }}{% if not loop.last %} {% endif %}
+                  {% endfor %}
               </td>
 
               <td>{{ hasta['grup_no'] }}</td>
@@ -370,6 +378,18 @@
   <script>
 
 
+    function maskeliAd(ad) {
+    return String(ad ?? "")
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(kelime =>
+            kelime.slice(0, 2) +
+            "*".repeat(Math.max(0, kelime.length - 2))
+        )
+        .join(" ");
+    } 
+
+
     // ----------------------------------------
     // HASTA SATIRI OLUŞTURMA
     // ----------------------------------------
@@ -387,8 +407,8 @@
         <td>${guvenliMetin(hasta.hasta_no)}</td>
 
         <td class="hasta-adi">
-            ${guvenliMetin(hasta.ad_soyad)}
-        </td>
+          ${guvenliMetin(maskeliAd(hasta.ad_soyad))}
+      </td>
 
         <td>${guvenliMetin(hasta.grup_no || "-")}</td>
 
