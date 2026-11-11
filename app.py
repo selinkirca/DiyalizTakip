@@ -50,11 +50,17 @@ def hasta_sutunlarini_hazirla():
     with veritabani_baglantisi() as baglanti:
 
         sutunlar = [
-            satir["name"]
-            for satir in baglanti.execute(
+            sutun["name"]
+            for sutun in baglanti.execute(
                 "PRAGMA table_info(hastalar)"
             ).fetchall()
         ]
+
+        if "durum_tarihi" not in sutunlar:
+            baglanti.execute("""
+                ALTER TABLE hastalar
+                ADD COLUMN durum_tarihi TEXT
+            """)
 
         if "durum" not in sutunlar:
             baglanti.execute("""
@@ -62,11 +68,19 @@ def hasta_sutunlarini_hazirla():
                 ADD COLUMN durum TEXT DEFAULT ''
             """)
 
-        if "sure" not in sutunlar:
+        sutunlar = [
+            sutun[1]
+            for sutun in baglanti.execute(
+                "PRAGMA table_info(hastalar)"
+            ).fetchall()
+        ]
+
+        if "tv_onayli" not in sutunlar:
             baglanti.execute("""
                 ALTER TABLE hastalar
-                ADD COLUMN sure TEXT DEFAULT ''
+                ADD COLUMN tv_onayli INTEGER NOT NULL DEFAULT 0
             """)
+
 
 def islem_kaydi_ekle(
     islem_turu,
@@ -231,7 +245,7 @@ def hasta_ekle():
 
             baglanti.execute("""
                 INSERT INTO hastalar
-                (hasta_no, ad_soyad, grup_no, durum, sure)
+                (hasta_no, ad_soyad, grup_no, durum)
                 VALUES (?, ?, ?, '', '')
             """, (hasta_no, ad_soyad, grup_no))
 
@@ -258,7 +272,6 @@ def hasta_ekle():
             "basarili": False,
             "mesaj": "Hasta kaydedilirken bir veritabanı hatası oluştu."
         }), 500
-
 @app.route("/hasta-durum-guncelle", methods=["POST"])
 @giris_gerekli
 def hasta_durum_guncelle():
@@ -267,7 +280,12 @@ def hasta_durum_guncelle():
 
     hasta_no = veri.get("hasta_no")
     durum = str(veri.get("durum", "")).strip()
-    sure = str(veri.get("sure", "")).strip()
+
+    if veri.get("onay") is not True:
+        return jsonify({
+            "basarili": False,
+            "mesaj": "Hasta durumunu kaydetmek için onay vermelisiniz."
+        }), 403
 
     gecerli_durumlar = [
         "",
@@ -278,17 +296,6 @@ def hasta_durum_guncelle():
         "iptal"
     ]
 
-    gecerli_sureler = [
-        "",
-        "30dk",
-        "1saat",
-        "2saat",
-        "3saat",
-        "4saat",
-        "5saat",
-        "6saat"
-    ]
-
     try:
         hasta_no = int(hasta_no)
     except (ValueError, TypeError):
@@ -297,10 +304,10 @@ def hasta_durum_guncelle():
             "mesaj": "Geçersiz hasta numarası."
         }), 400
 
-    if durum not in gecerli_durumlar or sure not in gecerli_sureler:
+    if durum not in gecerli_durumlar:
         return jsonify({
             "basarili": False,
-            "mesaj": "Geçersiz durum veya süre seçimi."
+            "mesaj": "Geçersiz durum seçimi."
         }), 400
 
     try:
@@ -308,9 +315,22 @@ def hasta_durum_guncelle():
 
             sonuc = baglanti.execute("""
                 UPDATE hastalar
-                SET durum = ?, sure = ?
+                SET durum = ?,
+                    durum_tarihi = CASE
+                        WHEN ? = '' THEN NULL
+                        ELSE datetime('now', 'localtime')
+                    END,
+                    tv_onayli = CASE
+                        WHEN ? = '' THEN 0
+                        ELSE 1
+                    END
                 WHERE hasta_no = ?
-            """, (durum, sure, hasta_no))
+            """, (
+                durum,
+                durum,
+                durum,
+                hasta_no
+            ))
 
             if sonuc.rowcount == 0:
                 return jsonify({
@@ -320,7 +340,7 @@ def hasta_durum_guncelle():
 
         return jsonify({
             "basarili": True,
-            "mesaj": "Hasta bilgileri güncellendi."
+            "mesaj": "Hasta durumu güncellendi."
         })
 
     except sqlite3.Error as hata:
@@ -384,7 +404,7 @@ def admin_hasta_yonetimi():
     with veritabani_baglantisi() as baglanti:
 
         hastalar = baglanti.execute("""
-            SELECT hasta_no, ad_soyad, grup_no, durum, sure
+            SELECT hasta_no, ad_soyad, grup_no, durum
             FROM hastalar
             ORDER BY hasta_no
         """).fetchall()
@@ -441,7 +461,7 @@ def admin_hasta_ekle():
 
             baglanti.execute("""
                 INSERT INTO hastalar
-                (hasta_no, ad_soyad, grup_no, durum, sure)
+                (hasta_no, ad_soyad, grup_no, durum)
                 VALUES (?, ?, ?, '', '')
             """, (hasta_no, ad_soyad, grup_no))
 
@@ -465,6 +485,7 @@ def admin_hasta_ekle():
     "/admin/hasta-guncelle/<eski_hasta_no>",
     methods=["POST"]
 )
+
 @giris_gerekli
 @admin_gerekli
 def admin_hasta_guncelle(eski_hasta_no):
@@ -473,7 +494,6 @@ def admin_hasta_guncelle(eski_hasta_no):
     ad_soyad = request.form.get("ad_soyad", "").strip()
     grup_no = request.form.get("grup_no", "").strip()
     durum = request.form.get("durum", "").strip()
-    sure = request.form.get("sure", "").strip()
 
     # Yeni hasta numarası kontrolü
     if not yeni_hasta_no.isdigit() or len(yeni_hasta_no) > 12:
@@ -505,23 +525,8 @@ def admin_hasta_guncelle(eski_hasta_no):
         "iptal"
     ]
 
-    gecerli_sureler = [
-        "",
-        "30dk",
-        "1saat",
-        "2saat",
-        "3saat",
-        "4saat",
-        "5saat",
-        "6saat"
-    ]
-
-    if (
-        grup_no not in gecerli_gruplar
-        or durum not in gecerli_durumlar
-        or sure not in gecerli_sureler
-    ):
-        flash("Geçersiz grup, durum veya süre seçimi.", "error")
+    if grup_no not in gecerli_gruplar or durum not in gecerli_durumlar:
+        flash("Geçersiz grup veya durum seçimi.", "error")
         return redirect(url_for("admin_hasta_yonetimi"))
 
     try:
@@ -534,14 +539,19 @@ def admin_hasta_guncelle(eski_hasta_no):
                     ad_soyad = ?,
                     grup_no = ?,
                     durum = ?,
-                    sure = ?
+                    durum_tarihi = CASE
+                        WHEN ? = '' THEN NULL
+                        WHEN durum IS NOT ? THEN datetime('now', 'localtime')
+                        ELSE durum_tarihi
+                    END
                 WHERE hasta_no = ?
             """, (
                 yeni_hasta_no,
                 ad_soyad,
                 grup_no,
                 durum,
-                sure,
+                durum,
+                durum,
                 eski_hasta_no
             ))
 
@@ -717,33 +727,51 @@ def hasta_adi_gizle(ad_soyad):
 
     return " ".join(gizli_kelimeler)
 
-
 @app.route("/api/hasta-durumlari")
 def tv_hasta_durumlari():
 
     try:
         with veritabani_baglantisi() as baglanti:
 
+            # Önceki günlerden kalan durumları sıfırla
+            baglanti.execute("""
+                UPDATE hastalar
+                SET durum = '',
+                    durum_tarihi = NULL,
+                    tv_onayli = 0
+                WHERE durum_tarihi IS NOT NULL
+                AND date(durum_tarihi) != date('now', 'localtime')
+            """)
+
+            # Yalnızca bugün durum verilen ve TV'de gösterilmesi onaylanan hastaları getir
             hastalar = baglanti.execute("""
-                SELECT ad_soyad, durum
+                SELECT
+                    hasta_no,
+                    ad_soyad,
+                    durum,
+                    durum_tarihi
                 FROM hastalar
                 WHERE durum IS NOT NULL
-                  AND durum != ''
-                ORDER BY  hasta_no
+                AND durum != ''
+                AND tv_onayli = 1
+                AND date(durum_tarihi) = date('now', 'localtime')
+                ORDER BY hasta_no
             """).fetchall()
 
-        hasta_listesi = [
-            {
-                "ad_soyad": hasta_adi_gizle(hasta["ad_soyad"]),
-                "durum": hasta["durum"]
-            }
-            for hasta in hastalar
-        ]
+            hasta_listesi = [
+                {
+                    "hasta_no": hasta["hasta_no"],
+                    "ad_soyad": hasta_adi_gizle(hasta["ad_soyad"]),
+                    "durum": hasta["durum"],
+                    "durum_tarihi": hasta["durum_tarihi"]
+                }
+                for hasta in hastalar
+            ]
 
-        return jsonify({
-            "basarili": True,
-            "hastalar": hasta_listesi
-        })
+            return jsonify({
+                "basarili": True,
+                "hastalar": hasta_listesi
+            })
 
     except sqlite3.Error as hata:
         print("TV veri çekme hatası:", hata)
@@ -752,7 +780,6 @@ def tv_hasta_durumlari():
             "basarili": False,
             "mesaj": "Hasta bilgileri alınamadı."
         }), 500
-
 
 # --------------------------------------------------
 # TELEVİZYON EKRANI

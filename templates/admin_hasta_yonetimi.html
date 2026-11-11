@@ -383,7 +383,6 @@
                             <th>Ad-Soyad</th>
                             <th>Grup No</th>
                             <th>Durum</th>
-                            <th>Süre</th>
                             <th>İşlemler</th>
                         </tr>
 
@@ -458,27 +457,6 @@
                             </td>
 
                             <td>
-                                <select name="sure" form="{{ form_id }}">
-
-                                    <option value="">Süre seçiniz</option>
-
-                                    <option value="30dk" {% if hasta['sure']=='30dk' %}selected{% endif %}>
-                                        30 dk
-                                    </option>
-
-                                    {% for saat in range(1, 7) %}
-
-                                    <option value="{{ saat }}saat" {% if hasta['sure']==(saat|string ~ 'saat' )
-                                        %}selected{% endif %}>
-                                        {{ saat }} saat
-                                    </option>
-
-                                    {% endfor %}
-
-                                </select>
-                            </td>
-
-                            <td>
 
                                 <div class="islem-butonlari">
 
@@ -506,8 +484,8 @@
                         {% else %}
 
                         <tr>
-                            <td colspan="6" class="empty-message">
-                                Henüz hasta kaydı bulunmuyor.
+                            <td colspan="5" class="empty-message">
+                                    Henüz hasta kaydı bulunmuyor.
                             </td>
                         </tr>
 
@@ -545,7 +523,7 @@
             const sonucSatiri = document.createElement("tr");
 
             const sonucHucre = document.createElement("td");
-            sonucHucre.colSpan = 6;
+            sonucHucre.colSpan = 5; 
             sonucHucre.className = "empty-message";
             sonucHucre.textContent = "Aramanızla eşleşen hasta bulunamadı.";
 

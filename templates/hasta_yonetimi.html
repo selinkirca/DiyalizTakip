@@ -200,7 +200,6 @@
               <th>Ad-Soyad</th>
               <th>Grup No</th>
               <th>Durumlar</th>
-              <th>Süre</th>
               <th>Onay</th>
             </tr>
           </thead>
@@ -255,47 +254,6 @@
                 </select>
 
               </td>
-
-
-              <!-- SÜRE SEÇİMİ -->
-              <td>
-
-                <select class="tablo-secimi sure-sec">
-
-                  <option value="">Süre seçiniz</option>
-
-                  <option value="30dk" {% if hasta['sure']=='30dk' %}selected{% endif %}>
-                    30 dk
-                  </option>
-
-                  <option value="1saat" {% if hasta['sure']=='1saat' %}selected{% endif %}>
-                    1 saat
-                  </option>
-
-                  <option value="2saat" {% if hasta['sure']=='2saat' %}selected{% endif %}>
-                    2 saat
-                  </option>
-
-                  <option value="3saat" {% if hasta['sure']=='3saat' %}selected{% endif %}>
-                    3 saat
-                  </option>
-
-                  <option value="4saat" {% if hasta['sure']=='4saat' %}selected{% endif %}>
-                    4 saat
-                  </option>
-
-                  <option value="5saat" {% if hasta['sure']=='5saat' %}selected{% endif %}>
-                    5 saat
-                  </option>
-
-                  <option value="6saat" {% if hasta['sure']=='6saat' %}selected{% endif %}>
-                    6 saat
-                  </option>
-
-                </select>
-
-              </td>
-
 
               <!-- ONAY BUTONU -->
               <td>
@@ -395,64 +353,53 @@
     // ----------------------------------------
 
 
+
     function hastaSatiriOlustur(hasta) {
 
-      const satir = document.createElement("tr");
+        const satir = document.createElement("tr");
 
-      satir.dataset.hastaNo = hasta.hasta_no;
-      satir.dataset.hastaAdi = hasta.ad_soyad;
-      satir.dataset.grupNo = hasta.grup_no || "";
+        satir.dataset.hastaNo = hasta.hasta_no;
+        satir.dataset.hastaAdi = hasta.ad_soyad;
+        satir.dataset.grupNo = hasta.grup_no || "";
 
-      satir.innerHTML = `
-        <td>${guvenliMetin(hasta.hasta_no)}</td>
+        satir.innerHTML = `
+            <td>${guvenliMetin(hasta.hasta_no)}</td>
 
-        <td class="hasta-adi">
-          ${guvenliMetin(maskeliAd(hasta.ad_soyad))}
-      </td>
+            <td class="hasta-adi">
+                ${guvenliMetin(maskeliAd(hasta.ad_soyad))}
+            </td>
 
-        <td>${guvenliMetin(hasta.grup_no || "-")}</td>
+            <td>${guvenliMetin(hasta.grup_no || "-")}</td>
 
-        <td>
-            <select class="tablo-secimi durum-sec">
-                <option value="">Durum seçiniz</option>
-                <option value="hazirlaniyor">Hasta katater takılması işlemi için hazırlanıyor.</option>
-                <option value="basladi">Hastanın diyaliz işlemi başladı.</option>
-                <option value="bitti">Hastanın diyaliz tedavisi bitti.</option>
-                <option value="transfer">Hasta kliniğe transfer edildi.</option>
-                <option value="iptal">Diyaliz iptal edildi.</option>
-            </select>
-        </td>
+            <td>
+                <select class="tablo-secimi durum-sec">
+                    <option value="">Durum seçiniz</option>
+                    <option value="hazirlaniyor">Hasta katater takılması işlemi için hazırlanıyor.</option>
+                    <option value="basladi">Hastanın diyaliz işlemi başladı.</option>
+                    <option value="bitti">Hastanın diyaliz tedavisi bitti.</option>
+                    <option value="transfer">Hasta kliniğe transfer edildi.</option>
+                    <option value="iptal">Diyaliz iptal edildi.</option>
+                </select>
+            </td>
 
-        <td>
-            <select class="tablo-secimi sure-sec">
-                <option value="">Süre seçiniz</option>
-                <option value="30dk">30 dk</option>
-                <option value="1saat">1 saat</option>
-                <option value="2saat">2 saat</option>
-                <option value="3saat">3 saat</option>
-                <option value="4saat">4 saat</option>
-                <option value="5saat">5 saat</option>
-                <option value="6saat">6 saat</option>
-            </select>
-        </td>
+            <td>
+                <button type="button" class="onay-buton" title="Onayla">
+                    ✓
+                </button>
+            </td>
+        `;
 
-        <td>
-            <button type="button" class="onay-butonu">
-                ✓
-            </button>
-        </td>
-    `;
+        document.getElementById("hastaTabloGovdesi").appendChild(satir);
 
-      document.getElementById("hastaTabloGovdesi").appendChild(satir);
-      hastaFiltrele();
+        hastaFiltrele();
 
+        const bosTablo = document.getElementById("bosTablo");
 
-      const bosTablo = document.getElementById("bosTablo");
-
-      if (bosTablo) {
-        bosTablo.hidden = true;
-      }
+        if (bosTablo) {
+            bosTablo.hidden = true;
+        }
     }
+
 
 
 
@@ -486,75 +433,78 @@
 
     const hastaTabloGovdesi = document.getElementById("hastaTabloGovdesi");
 
-    async function hastaBilgileriniKaydet(satir, durumDegeri = null) {
 
-      const hastaNo = satir.dataset.hastaNo;
+    async function hastaBilgileriniKaydet(
+        satir,
+        durumDegeri = null,
+        onay = false
+    ) {
+        const hastaNo = satir.dataset.hastaNo;
+        const durumSecimi = satir.querySelector(".durum-sec");
 
-      const durumSecimi = satir.querySelector(".durum-sec");
-      const sureSecimi = satir.querySelector(".sure-sec");
+        const durum = durumDegeri !== null
+            ? durumDegeri
+            : durumSecimi.value;
 
-      const durum = durumDegeri !== null
-        ? durumDegeri
-        : durumSecimi.value;
+        try {
+            const cevap = await fetch("/hasta-durum-guncelle", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    hasta_no: hastaNo,
+                    durum: durum,
+                    onay: onay
+                })
+            });
 
-      const sure = sureSecimi.value;
+            const sonuc = await cevap.json();
 
-      try {
+            if (!cevap.ok || !sonuc.basarili) {
+                alert(sonuc.mesaj || "Hasta bilgileri kaydedilemedi.");
+                return false;
+            }
 
-        const cevap = await fetch("/hasta-durum-guncelle", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            hasta_no: hastaNo,
-            durum: durum,
-            sure: sure
-          })
-        });
+            return true;
 
-        const sonuc = await cevap.json();
-
-        if (!cevap.ok || !sonuc.basarili) {
-          alert(sonuc.mesaj || "Hasta bilgileri kaydedilemedi.");
-          return false;
+        } catch (hata) {
+            console.error("Kayıt hatası:", hata);
+            alert("Sunucuya bağlanılamadı. Lütfen tekrar deneyiniz.");
+            return false;
         }
-
-        return true;
-
-      } catch (hata) {
-
-        console.error("Kayıt hatası:", hata);
-        alert("Sunucuya bağlanılamadı. Lütfen tekrar deneyiniz.");
-
-        return false;
-      }
     }
 
+    // Onay butonuna basıldığında hasta durumunu kaydet
+    hastaTabloGovdesi.addEventListener("click", async function(olay) {
 
-    // Durum veya süre değiştiğinde otomatik kaydet
-    hastaTabloGovdesi.addEventListener("change", async function (olay) {
+        const onayButonu = olay.target.closest(".onay-buton");
 
-      if (
-        !olay.target.classList.contains("durum-sec") &&
-        !olay.target.classList.contains("sure-sec")
-      ) {
-        return;
-      }
+        if (!onayButonu) {
+            return;
+        }
 
-      const satir = olay.target.closest("tr");
+        const satir = onayButonu.closest("tr");
 
-      if (!satir) {
-        return;
-      }
+        if (!satir) {
+            return;
+        }
 
-      const kaydedildi = await hastaBilgileriniKaydet(satir);
+        onayButonu.disabled = true;
 
-      if (kaydedildi) {
-        console.log("Hasta durumu ve süresi kaydedildi.");
-      }
+        const kaydedildi = await hastaBilgileriniKaydet(
+            satir,
+            null,
+            true
+        );
 
+        onayButonu.disabled = false;
+
+        if (kaydedildi) {
+            alert("Hasta durumu onaylandı ve TV ekranına gönderildi.");
+        }
     });
+
 
     // Sağ tıklama
     hastaTabloGovdesi.addEventListener("contextmenu", function (olay) {
@@ -615,8 +565,9 @@
       }
 
       const kaydedildi = await hastaBilgileriniKaydet(
-        secilenHastaSatiri,
-        "iptal"
+          secilenHastaSatiri,
+          "iptal",
+          true
       );
 
       if (!kaydedildi) {

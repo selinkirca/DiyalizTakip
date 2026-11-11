@@ -5,136 +5,96 @@
     box-sizing: border-box;
 }
 
+html,
 body {
-    min-height: 100vh;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
     background: #eef2f7;
     color: #17243a;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Segoe UI", Arial, sans-serif;
 }
+
+/* ANA EKRAN */
 
 .tv-container {
-    min-height: 100vh;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
-    padding: 35px 55px 22px;
-    max-width: 1900px;
-    margin: 0 auto;
+    padding: 0 30px 12px;
+    overflow: hidden;
 }
 
-.tv-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 25px;
-    border-bottom: 2px solid #dce3ec;
+/* NAVBAR */
+
+
+
+.tv-navbar::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(
+        90deg,
+        #7db7e8,
+        #ffffff,
+        #7db7e8
+    );
+    opacity: 0.7;
 }
 
-.logo-alani {
-    display: flex;
-    align-items: center;
-    gap: 17px;
-}
 
-.logo-icon {
-    width: 65px;
-    height: 65px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 18px;
-    background: #173d68;
-    color: white;
-    font-size: 48px;
-    font-weight: bold;
-}
 
-.logo-alani h1 {
-    font-size: 30px;
-    letter-spacing: 1.5px;
-    color: #173d68;
-}
+/* HASTA LİSTESİ */
 
-.logo-alani p {
-    margin-top: 6px;
-    font-size: 13px;
-    letter-spacing: 2px;
-    color: #718096;
-    font-weight: bold;
-}
 
-.canli-alani {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 13px 20px;
-    border-radius: 30px;
-    background: #e1f5eb;
-    color: #18794e;
-    font-size: 15px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-}
-
-.canli-nokta {
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background: #20a464;
-    box-shadow: 0 0 0 5px #c7ead8;
-}
-
-.bilgi-alani {
-    text-align: center;
-    margin: 30px 0;
-}
-
-.bilgi-alani h2 {
-    font-size: 32px;
-    color: #1d3553;
-    letter-spacing: 1px;
-}
-
-.bilgi-alani p {
-    margin-top: 10px;
-    color: #718096;
-    font-size: 17px;
-}
+/* HASTA LİSTESİ - HER ZAMAN 5 SABİT ALAN */
 
 .hasta-listesi {
-    display: flex;
-    flex-direction: column;
-    gap: 13px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+    gap: 12px;
     flex: 1;
-    align-content: start;
+    min-height: 0;
+    overflow: hidden;
 }
+
+
+/* HASTA KARTI */
+
+
+/* HASTA KARTI - SABİT BOYUT */
 
 .hasta-karti {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    min-height: 105px;
-    padding: 17px 28px;
+    gap: 15px;
+
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+
+    padding: 15px 30px;
+
     background: white;
     border-radius: 15px;
-    border: 1px solid #e1e7ef;
+    border: 1px solid #dce3ec;
     border-left: 9px solid #4778ad;
+
     box-shadow: 0 5px 18px rgba(30, 55, 85, 0.07);
+    position: relative;
 }
 
-.hasta-karti {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    min-height: 145px;
-    padding: 25px 30px;
-    background: white;
-    border-radius: 18px;
-    border: 1px solid #e1e7ef;
-    border-left: 9px solid #4778ad;
-    box-shadow: 0 5px 18px rgba(30, 55, 85, 0.07);
-}
 
 .hasta-bilgisi {
     min-width: 0;
@@ -142,67 +102,49 @@ body {
 
 .hasta-etiketi {
     color: #8794a5;
-    font-size: 13px;
+    font-size: clamp(11px, 1vw, 14px);
     font-weight: bold;
     letter-spacing: 1.2px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .hasta-adi {
     color: #1d3553;
-    font-size: clamp(24px, 2.2vw, 36px);
+    font-size: clamp(19px, 2.2vw, 36px);
     font-weight: bold;
     overflow-wrap: anywhere;
 }
 
 .durum-etiketi {
-    max-width: 48%;
-    padding: 13px 18px;
-    border-radius: 12px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-20%);
+
+    width: 380px;
+    height: 75px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 20px;
+    border-radius: 10px;
+
     text-align: center;
-    font-size: clamp(15px, 1.4vw, 21px);
+    font-size: clamp(16px, 1.4vw, 22px);
     font-weight: bold;
-    line-height: 1.35;
-}
+    line-height: 1.3;
 
-.durum-hazirlaniyor {
-    border-left-color: #e5a52e;
-}
+    background: #edf4fa;
+    color: #456783;
 
-.durum-hazirlaniyor .durum-etiketi {
-    background: #fff3d8;
-    color: #996400;
+    flex-shrink: 0;
 }
-
-.durum-basladi {
-    border-left-color: #269b68;
-}
-
-.durum-basladi .durum-etiketi {
-    background: #dcf5e8;
-    color: #18794e;
-}
-
-.durum-bitti {
-    border-left-color: #4778ad;
-}
-
-.durum-bitti .durum-etiketi {
-    background: #e3effb;
-    color: #285b91;
-}
-
-.durum-transfer {
-    border-left-color: #8b6ac4;
-}
-
-.durum-transfer .durum-etiketi {
-    background: #eee7fb;
-    color: #6945a5;
-}
+/* İPTAL EDİLEN HASTA */
 
 .durum-iptal {
-    border-left-color: #d45b5b;
+    border-left-color: #d62828;
+    animation: kirmiziYanipSonme 1s infinite;
 }
 
 .durum-iptal .durum-etiketi {
@@ -210,39 +152,258 @@ body {
     color: #b33131;
 }
 
-.bilgi-mesaji {
-    grid-column: 1 / -1;
-    padding: 45px 20px;
-    text-align: center;
-    background: white;
-    border-radius: 18px;
-    color: #718096;
-    font-size: 23px;
+@keyframes kirmiziYanipSonme {
+    0%, 100% {
+        background: #ffffff;
+        border-color: #d62828;
+    }
+
+    50% {
+        background: #ffdada;
+        border-color: #ff0000;
+    }
 }
 
-.tv-footer {
+/* TEDAVİSİ BİTEN VE TRANSFER EDİLEN HASTALAR */
+
+.durum-bitti,
+.durum-transfer {
+    background: #e0f4e8;
+    border-left-color: #23965b;
+}
+
+.durum-bitti .hasta-adi,
+.durum-transfer .hasta-adi {
+    color: #176b40;
+}
+
+.durum-bitti .durum-etiketi,
+.durum-transfer .durum-etiketi {
+    background: #c6ebd5;
+    color: #176b40;
+}
+
+/* BİLGİ MESAJI */
+
+.bilgi-mesaji {
+    flex: 1;
+    min-height: 0;
     display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+    text-align: center;
+    background: white;
+    border-radius: 15px;
+    color: #718096;
+    font-size: clamp(16px, 2vw, 23px);
+}
+
+/* ALT BİLGİ */
+
+.tv-footer {
+    flex-shrink: 0;
+    min-height: 38px;
+
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    gap: 15px;
-    margin-top: 25px;
-    padding-top: 17px;
+    gap: 10px;
+
+    margin-top: 12px;
+    padding-top: 8px;
+
     border-top: 1px solid #dce3ec;
     color: #8794a5;
-    font-size: 13px;
+    font-size: clamp(10px, 0.9vw, 13px);
 }
+
+/* KÜÇÜK EKRANLAR */
 
 @media (max-width: 900px) {
     .tv-container {
-        padding: 22px;
+        padding: 0 15px 10px;
     }
 
-    .tv-header {
-        align-items: flex-start;
-        gap: 15px;
-        flex-direction: column;
+    .tv-navbar {
+        width: calc(100% + 30px);
+        margin-left: -15px;
+        min-height: 75px;
+        margin-bottom: 12px;
+    }
+
+    .tv-navbar h1 {
+        letter-spacing: 1.5px;
+    }
+
+    .hasta-listesi {
+        gap: 8px;
+    }
+
+    .hasta-karti {
+        padding: 10px 12px;
+        border-left-width: 6px;
     }
 
     .tv-footer {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+/* LOGO */
+
+
+
+.tv-logo img {
+    max-height: 100%;
+    max-width: 180px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+
+/* NAVBAR */
+
+.tv-navbar {
+    width: calc(100% + 60px);
+    height: clamp(105px, 15vh, 135px);
+    min-height: 105px;
+    flex-shrink: 0;
+    margin-left: -30px;
+    margin-bottom: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(9, 163, 80, 0.12);
+}
+
+.tv-navbar::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: #09A350;
+}
+
+/* SOL TARAFTAKİ LOGO VE KURUM ADI */
+
+.tv-kurum {
+    position: absolute;
+    left: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tv-logo {
+    height: 95px;
+    width: 125px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tv-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.tv-kurum-yazi {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: black;
+    font-size: clamp(13px, 1.3vw, 19px);
+    font-weight: 750;
+    letter-spacing: 1px;
+}
+
+/* ORTADAKİ BAŞLIK VE TARİH */
+
+.tv-baslik {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    padding: 0 15px;
+}
+
+.tv-baslik h1 {
+    color: black;
+    font-size: clamp(20px, 2.5vw, 36px);
+    font-weight: 750;
+    letter-spacing: 2px;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+#tvTarihSaat {
+    color: black;
+    font-size: clamp(13px, 1.2vw, 17px);
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+/* HASTA KARTINDA SAAT */
+
+.hasta-saat {
+    min-width: 105px;
+    text-align: right;
+    color: #52677e;
+    font-size: clamp(18px, 1.8vw, 27px);
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .tv-navbar {
+        width: calc(100% + 30px);
+        margin-left: -15px;
+    }
+
+    .tv-kurum {
+        left: 12px;
+        gap: 7px;
+    }
+
+    .tv-logo {
+        width: 65px;
+        height: 65px;
+    }
+
+    .tv-kurum-yazi {
+        color: #121718;
+    }
+
+    .tv-baslik h1 {
+        color: #121718;
+        text-shadow: none;
+    }
+
+    #tvTarihSaat {
+        color: #09A350;
+    }
+
+    .tv-baslik {
+        margin-left: 100px;
+    }
+
+    .hasta-saat {
+        min-width: 75px;
+        font-size: 16px;
     }
 }

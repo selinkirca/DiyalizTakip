@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Diyaliz Takip | Hasta Bilgilendirme</title>
+    <title>Hemodiyaliz Bekleme Ekranı</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='tv_ekrani.css') }}">
@@ -16,21 +16,27 @@
 
     <main class="tv-container">
 
-        <header class="tv-header">
-            <div class="logo-alani">
-                <div class="logo-icon">+</div>
+        
+        <header class="tv-navbar">
 
-                <div>
-                    <h1>DİYALİZ TAKİP</h1>
-                    <p>HASTA BİLGİLENDİRME EKRANI</p>
+            <div class="tv-kurum">
+                <div class="tv-logo">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="Kocaeli Üniversitesi Hastanesi">
+                </div>
+
+                <div class="tv-kurum-yazi">
+                    <span>KOCAELİ ÜNİVERSİTESİ</span>
+                    <span>HASTANESİ</span>
                 </div>
             </div>
 
-            <div class="canli-alani">
-                <span class="canli-nokta"></span>
-                CANLI BİLGİLENDİRME
+            <div class="tv-baslik">
+                <h1>HEMODİYALİZ BEKLEME EKRANI</h1>
+                <div id="tvTarihSaat">Tarih ve saat yükleniyor...</div>
             </div>
+
         </header>
+
 
         <section id="hastaListesi" class="hasta-listesi">
 
