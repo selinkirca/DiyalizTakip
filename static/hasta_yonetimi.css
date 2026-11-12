@@ -1505,3 +1505,84 @@ body {
     align-items: center;
     gap: 10px;
 }
+/* =================================
+   ONAYLANAN HASTA TASARIMI
+================================= */
+
+.hasta-tablosu tbody tr.hasta-onaylandi td {
+    background: #e6f4ef;
+    border-bottom: 1px solid #c5e5d8;
+    color: #164b3b;
+}
+
+/* Onaylanan hasta üzerine gelindiğinde */
+.hasta-tablosu tbody tr.hasta-onaylandi:hover td {
+    background: #d9eee6;
+}
+
+/* Hasta numarası */
+.hasta-tablosu tbody tr.hasta-onaylandi td:first-child {
+    color: #126047;
+    font-weight: 700;
+}
+
+/* Hasta adı */
+.hasta-tablosu tbody tr.hasta-onaylandi .hasta-adi {
+    color: #124c3a;
+    font-weight: 700;
+}
+
+/* Durum seçimi */
+.hasta-tablosu tbody tr.hasta-onaylandi .durum-sec {
+    background: #f5fbf8;
+    border-color: #a8d5c2;
+    color: #164b3b;
+    font-weight: 600;
+}
+
+/* Onay butonu */
+.hasta-tablosu tbody tr.hasta-onaylandi .onay-buton {
+    background: #167d80;
+    border-color: #167d80;
+    color: #ffffff;
+    font-size: 23px;
+    font-weight: 700;
+    cursor: default;
+}
+
+/* Onay butonu hover */
+.hasta-tablosu tbody tr.hasta-onaylandi .onay-buton:hover {
+    background: #116669;
+    border-color: #116669;
+}
+
+/* =================================
+   ONAYLANAN HASTA DURUM RENKLERİ
+================================= */
+
+/* İptal edilen hastanın tüm satırı */
+.hasta-tablosu tbody tr.hasta-onaylandi.durum-iptal-onayli > td {
+    background-color: #fce8e8 !important;
+}
+
+/* İptal edilen hastanın durum kutusu */
+.hasta-tablosu tbody tr.hasta-onaylandi.durum-iptal-onayli .durum-sec {
+    background-color: #f8dada !important;
+    border-color: #e6b5b5 !important;
+}
+
+/* Tedavisi biten veya kliniğe transfer edilen hastanın tüm satırı */
+.hasta-tablosu tbody tr.hasta-onaylandi.durum-mavi-onayli > td {
+    background-color: #e5f0ff !important;
+}
+
+/* Bitti veya transfer durumunun kutusu */
+.hasta-tablosu tbody tr.hasta-onaylandi.durum-mavi-onayli .durum-sec {
+    background-color: #d9e9ff !important;
+    border-color: #b3cbea !important;
+}
+
+/* Renk geçişi */
+.hasta-tablosu tbody tr > td {
+    transition: background-color 0.2s ease;
+}

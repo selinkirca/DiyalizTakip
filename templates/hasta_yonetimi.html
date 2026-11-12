@@ -475,7 +475,7 @@
         }
     }
 
-    // Onay butonuna basıldığında hasta durumunu kaydet
+    // Onaylanan hastaları tablonun en üstüne taşı
     hastaTabloGovdesi.addEventListener("click", async function(olay) {
 
         const onayButonu = olay.target.closest(".onay-buton");
@@ -500,9 +500,40 @@
 
         onayButonu.disabled = false;
 
+        
         if (kaydedildi) {
+
+            // Onay zamanını kaydet
+            satir.dataset.onayZamani = Date.now();
+
+            // Onay görünümünü değiştir
+            satir.classList.add("hasta-onaylandi");
+
+            // Onaylanan hastanın durumuna göre renkleri güncelle
+            hastaOnayRenginiGuncelle(satir);
+
+            onayButonu.classList.add("onaylandi");
+            onayButonu.innerHTML = "✓";
+            onayButonu.title = "Onaylandı";
+
+            // Hastayı tablonun en üstüne taşı
+            const onayliSatirlar = Array.from(
+                hastaTabloGovdesi.querySelectorAll(".hasta-onaylandi")
+            );
+
+            onayliSatirlar.sort((a, b) => {
+                return Number(b.dataset.onayZamani) -
+                      Number(a.dataset.onayZamani);
+            });
+
+            onayliSatirlar.forEach(onayliSatir => {
+                hastaTabloGovdesi.prepend(onayliSatir);
+            });
+
             alert("Hasta durumu onaylandı ve TV ekranına gönderildi.");
         }
+
+        
     });
 
 
@@ -840,6 +871,31 @@
       });
 
     });
+    
+    function hastaOnayRenginiGuncelle(satir) {
+
+        const durumSecimi = satir.querySelector(".durum-sec");
+
+        if (!durumSecimi) return;
+
+        satir.classList.remove(
+            "durum-iptal-onayli",
+            "durum-mavi-onayli"
+        );
+
+        if (durumSecimi.value === "iptal") {
+
+            satir.classList.add("durum-iptal-onayli");
+
+        } else if (
+            durumSecimi.value === "bitti" ||
+            durumSecimi.value === "transfer"
+        ) {
+
+            satir.classList.add("durum-mavi-onayli");
+        }
+    }
+
 
 
     // Sayfa açıldığında otomatik filtreleme yap

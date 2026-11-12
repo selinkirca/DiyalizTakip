@@ -272,6 +272,7 @@ def hasta_ekle():
             "basarili": False,
             "mesaj": "Hasta kaydedilirken bir veritabanı hatası oluştu."
         }), 500
+
 @app.route("/hasta-durum-guncelle", methods=["POST"])
 @giris_gerekli
 def hasta_durum_guncelle():
@@ -284,7 +285,7 @@ def hasta_durum_guncelle():
     if veri.get("onay") is not True:
         return jsonify({
             "basarili": False,
-            "mesaj": "Hasta durumunu kaydetmek için onay vermelisiniz."
+            "mesaj": "İşlemi tamamlamak için Onay butonuna basmalısınız."
         }), 403
 
     gecerli_durumlar = [
@@ -338,9 +339,14 @@ def hasta_durum_guncelle():
                     "mesaj": "Hasta kaydı bulunamadı."
                 }), 404
 
+        if durum == "":
+            mesaj = "Hasta TV ekranından kaldırıldı."
+        else:
+            mesaj = "Hasta durumu onaylandı ve TV ekranına gönderildi."
+
         return jsonify({
             "basarili": True,
-            "mesaj": "Hasta durumu güncellendi."
+            "mesaj": mesaj
         })
 
     except sqlite3.Error as hata:
@@ -350,6 +356,7 @@ def hasta_durum_guncelle():
             "basarili": False,
             "mesaj": "Veritabanı güncelleme hatası."
         }), 500
+
 # --------------------------------------------------
 # DASHBOARD
 # --------------------------------------------------
