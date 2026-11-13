@@ -199,9 +199,32 @@
               <th>Hasta No</th>
               <th>Ad-Soyad</th>
               <th>Grup No</th>
-              <th>Durumlar</th>
-              <th>Onay</th>
-            </tr>
+              <th class="durum-baslik">
+                  <div class="durum-baslik-icerik">
+                      <span>Durumlar</span>
+
+                      <button type="button" id="topluDurumAc" class="toplu-durum-ok">
+                           ⌄
+                      </button>
+                  </div>
+
+                  <div id="topluDurumListe" class="toplu-durum-liste">
+                      <button type="button" data-durum="">Durum Seçiniz</button>
+                      <button type="button" data-durum="hazirlaniyor">Hasta katater takılması işlemi için hazırlanıyor.</button>
+                      <button type="button" data-durum="basladi">Hastanın diyaliz işlemi başladı.</button>
+                      <button type="button" data-durum="bitti">Hastanın diyaliz tedavisi bitti.</button>
+                      <button type="button" data-durum="transfer">Hasta kliniğe transfer edildi.</button>
+                      <button type="button" data-durum="iptal">	Diyaliz iptal edildi.</button>
+                  </div>
+              </th>              <th>
+                  <label class="toplu-onay-baslik">
+                      <input
+                          type="checkbox"
+                          id="tumunuOnayla"
+                      >
+                      <span>Tümünü Onayla</span>
+                  </label>
+              </th>            </tr>
           </thead>
 
 
@@ -392,6 +415,7 @@
         document.getElementById("hastaTabloGovdesi").appendChild(satir);
 
         hastaFiltrele();
+        gunlukHastaSayisiniGuncelle();
 
         const bosTablo = document.getElementById("bosTablo");
 
@@ -435,47 +459,105 @@
 
 
     async function hastaBilgileriniKaydet(
-        satir,
-        durumDegeri = null,
-        onay = false
-    ) {
-        const hastaNo = satir.dataset.hastaNo;
+      satir,
+      durumDegeri = null,
+      onay = false,
+      hataGoster = true
+  ) {
+      const hastaNo = satir.dataset.hastaNo;
+      const durumSecimi = satir.querySelector(".durum-sec");
+
+      const durum = durumDegeri !== null
+          ? durumDegeri
+          : durumSecimi.value;
+
+      try {
+          const cevap = await fetch("/hasta-durum-guncelle", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                  hasta_no: hastaNo,
+                  durum: durum,
+                  onay: onay
+              })
+          });
+
+          const sonuc = await cevap.json();
+
+          if (!cevap.ok || !sonuc.basarili) {
+
+              if (hataGoster) {
+                  alert(sonuc.mesaj || "Hasta bilgileri kaydedilemedi.");
+              }
+
+              return false;
+          }
+
+          return true;
+
+      } catch (hata) {
+
+          console.error("Kayıt hatası:", hata);
+
+          if (hataGoster) {
+              alert("Sunucuya bağlanılamadı. Lütfen tekrar deneyiniz.");
+          }
+
+          return false;
+      }
+  }
+
+    // ----------------------------------------
+    // ONAYLANAN HASTAYI TABLODA GÖSTER
+    // ----------------------------------------
+
+    function hastaOnayiniTamamla(satir) {
+
         const durumSecimi = satir.querySelector(".durum-sec");
+        const durum = durumSecimi ? durumSecimi.value : "";
 
-        const durum = durumDegeri !== null
-            ? durumDegeri
-            : durumSecimi.value;
+        // Önceki onay rengini temizle
+        satir.classList.remove("hasta-onaylandi");
 
-        try {
-            const cevap = await fetch("/hasta-durum-guncelle", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    hasta_no: hastaNo,
-                    durum: durum,
-                    onay: onay
-                })
-            });
-
-            const sonuc = await cevap.json();
-
-            if (!cevap.ok || !sonuc.basarili) {
-                alert(sonuc.mesaj || "Hasta bilgileri kaydedilemedi.");
-                return false;
-            }
-
-            return true;
-
-        } catch (hata) {
-            console.error("Kayıt hatası:", hata);
-            alert("Sunucuya bağlanılamadı. Lütfen tekrar deneyiniz.");
-            return false;
+        // Durum Seçiniz seçiliyse yeşil renk verme
+        if (durum !== "") {
+            satir.classList.add("hasta-onaylandi");
+            satir.dataset.onayZamani = Date.now();
+        } else {
+            delete satir.dataset.onayZamani;
         }
+
+        // Diğer durum renklerini uygula
+        hastaOnayRenginiGuncelle(satir);
+
+        const onayButonu = satir.querySelector(".onay-buton");
+
+        if (onayButonu) {
+            onayButonu.classList.add("onaylandi");
+            onayButonu.innerHTML = "✓";
+            onayButonu.title = "Onaylandı";
+        }
+
+        // Yalnızca durum seçilmiş ve onaylanmış satırları üste taşı
+        const onayliSatirlar = Array.from(
+            hastaTabloGovdesi.querySelectorAll(".hasta-onaylandi")
+        );
+
+        onayliSatirlar.sort((a, b) =>
+            Number(b.dataset.onayZamani) - Number(a.dataset.onayZamani)
+        );
+
+        onayliSatirlar.forEach(onayliSatir => {
+            hastaTabloGovdesi.prepend(onayliSatir);
+        });
     }
 
-    // Onaylanan hastaları tablonun en üstüne taşı
+    // ----------------------------------------
+    // TEK HASTA ONAYLAMA
+    // ----------------------------------------
+
     hastaTabloGovdesi.addEventListener("click", async function(olay) {
 
         const onayButonu = olay.target.closest(".onay-buton");
@@ -500,40 +582,105 @@
 
         onayButonu.disabled = false;
 
-        
         if (kaydedildi) {
 
-            // Onay zamanını kaydet
-            satir.dataset.onayZamani = Date.now();
-
-            // Onay görünümünü değiştir
-            satir.classList.add("hasta-onaylandi");
-
-            // Onaylanan hastanın durumuna göre renkleri güncelle
-            hastaOnayRenginiGuncelle(satir);
-
-            onayButonu.classList.add("onaylandi");
-            onayButonu.innerHTML = "✓";
-            onayButonu.title = "Onaylandı";
-
-            // Hastayı tablonun en üstüne taşı
-            const onayliSatirlar = Array.from(
-                hastaTabloGovdesi.querySelectorAll(".hasta-onaylandi")
-            );
-
-            onayliSatirlar.sort((a, b) => {
-                return Number(b.dataset.onayZamani) -
-                      Number(a.dataset.onayZamani);
-            });
-
-            onayliSatirlar.forEach(onayliSatir => {
-                hastaTabloGovdesi.prepend(onayliSatir);
-            });
+            hastaOnayiniTamamla(satir);
 
             alert("Hasta durumu onaylandı ve TV ekranına gönderildi.");
         }
 
-        
+    });
+
+
+    // ----------------------------------------
+    // TÜM HASTALARI ONAYLAMA
+    // ----------------------------------------
+
+    const tumunuOnayla = document.getElementById("tumunuOnayla");
+
+    tumunuOnayla.addEventListener("change", async function() {
+
+        if (!this.checked) {
+            return;
+        }
+
+        const hastaSatirlari = Array.from(
+            hastaTabloGovdesi.querySelectorAll("tr")
+        );
+
+        const onaylanacakHastalar = hastaSatirlari.filter(satir => {
+            const durumSecimi = satir.querySelector(".durum-sec");
+            return durumSecimi !== null;
+        });
+
+        if (onaylanacakHastalar.length === 0) {
+
+            this.checked = false;
+
+            alert("Onaylanacak hasta bulunamadı.");
+
+            return;
+        }
+
+        this.disabled = true;
+
+        let basariliSayisi = 0;
+        let basarisizSayisi = 0;
+
+        // Hastaları sırayla onayla
+        for (const satir of onaylanacakHastalar) {
+
+            const onayButonu = satir.querySelector(".onay-buton");
+
+            if (onayButonu) {
+                onayButonu.disabled = true;
+            }
+
+            const kaydedildi = await hastaBilgileriniKaydet(
+                satir,
+                null,
+                true,
+                false
+            );
+
+            if (kaydedildi) {
+
+                hastaOnayiniTamamla(satir);
+
+                basariliSayisi++;
+
+            } else {
+
+                basarisizSayisi++;
+
+            }
+
+            if (onayButonu) {
+                onayButonu.disabled = false;
+            }
+        }
+
+        this.disabled = false;
+
+        // Bütün işlemler başarılıysa kutucuğu işaretli bırak
+        this.checked = basarisizSayisi === 0;
+
+        if (basarisizSayisi === 0) {
+
+            alert(
+                basariliSayisi +
+                " hastanın durumu başarıyla onaylandı ve TV ekranına gönderildi."
+            );
+
+        } else {
+
+            alert(
+                "Onaylanan hasta sayısı: " + basariliSayisi +
+                "\nBaşarısız hasta sayısı: " + basarisizSayisi
+            );
+
+        }
+
     });
 
 
@@ -878,16 +1025,26 @@
 
         if (!durumSecimi) return;
 
+        // Önce eski durum renklerini kaldır
         satir.classList.remove(
             "durum-iptal-onayli",
             "durum-mavi-onayli"
         );
 
+        // Durum Seçiniz seçiliyse renklendirme yapma
+        if (durumSecimi.value === "") {
+            return;
+        }
+
+        // İptal seçildiyse
         if (durumSecimi.value === "iptal") {
 
             satir.classList.add("durum-iptal-onayli");
 
-        } else if (
+        }
+
+        // Bitti veya transfer seçildiyse
+        else if (
             durumSecimi.value === "bitti" ||
             durumSecimi.value === "transfer"
         ) {
@@ -896,10 +1053,124 @@
         }
     }
 
+    // ----------------------------------------
+    // TOPLU DURUM SEÇİM MENÜSÜ
+    // ----------------------------------------
+
+    const topluDurumAc = document.getElementById("topluDurumAc");
+    const topluDurumListe = document.getElementById("topluDurumListe");
+
+    // Menüyü açıp kapat
+    topluDurumAc.addEventListener("click", function () {
+        topluDurumListe.classList.toggle("acik");
+    });
+
+    
+    // Seçilen durumu yalnızca aktif bölümdeki hastalara uygula
+    topluDurumListe.addEventListener("click", function (olay) {
+
+        const secilenButon = olay.target.closest("button[data-durum]");
+
+        if (!secilenButon) return;
+
+        const secilenDurum = secilenButon.dataset.durum;
+
+        // Yalnızca seçili grup bölümünde görünen hastaları al
+        const hastaSatirlari = Array.from(
+            hastaTabloGovdesi.querySelectorAll("tr")
+        ).filter(satir => satir.style.display !== "none");
+
+        hastaSatirlari.forEach(satir => {
+
+            const durumSecimi = satir.querySelector(".durum-sec");
+
+            if (durumSecimi) {
+                durumSecimi.value = secilenDurum;
+
+                // Önceki onay görünümünü kaldır
+                satir.classList.remove(
+                    "hasta-onaylandi",
+                    "durum-iptal-onayli",
+                    "durum-mavi-onayli"
+                );
+
+                const onayButonu = satir.querySelector(".onay-buton");
+
+                if (onayButonu) {
+                    onayButonu.classList.remove("onaylandi");
+                    onayButonu.innerHTML = "✓";
+                    onayButonu.title = "Onayla";
+                }
+
+                delete satir.dataset.onayZamani;
+            }
+        });
+
+        // Menü kapat
+        topluDurumListe.classList.remove("acik");
+    });
+
+
+    // Dışarı tıklanınca menüyü kapat
+    document.addEventListener("click", function (olay) {
+
+        if (
+            !topluDurumAc.contains(olay.target) &&
+            !topluDurumListe.contains(olay.target)
+        ) {
+            topluDurumListe.classList.remove("acik");
+        }
+
+    });
 
 
     // Sayfa açıldığında otomatik filtreleme yap
     gununGrubunuBelirle();
+    gunlukHastaSayisiniGuncelle();
+
+    // ----------------------------------------
+    // GÜNLÜK TOPLAM HASTA SAYISI
+    // ----------------------------------------
+
+    function gunlukHastaSayisiniGuncelle() {
+
+        const bugun = new Date().getDay();
+
+        let gunlukGrup;
+
+        switch (bugun) {
+
+            case 1:
+            case 3:
+            case 5:
+                gunlukGrup = "1";
+                break;
+
+            case 2:
+            case 4:
+            case 6:
+                gunlukGrup = "2";
+                break;
+
+            case 0:
+                gunlukGrup = "tum";
+                break;
+        }
+
+        const satirlar = hastaTabloGovdesi.querySelectorAll("tr");
+
+        const toplam = Array.from(satirlar).filter(satir => {
+
+            if (gunlukGrup === "tum") {
+                return true;
+            }
+
+            return satir.dataset.grupNo === gunlukGrup;
+
+        }).length;
+
+        document.getElementById("gunlukHastaSayisi").textContent = toplam;
+    }
 
 
 

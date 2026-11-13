@@ -227,6 +227,7 @@ async function hastalariGetir() {
         }
 
         hastalar = veri.hastalar || [];
+        document.getElementById("toplamHastaSayisi").textContent = hastalar.length;
 
         // Durumu değişen hastaların eski zaman kayıtlarını temizle
         const mevcutAnahtarlar = new Set(

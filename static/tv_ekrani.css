@@ -407,3 +407,43 @@ body {
         font-size: 16px;
     }
 }
+/* TOPLAM HASTA KUTUSU */
+
+.tv-toplam-hasta {
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    min-width: 145px;
+    height: 75px;
+    padding: 8px 20px;
+
+    background: #f0f8f3;
+    border: 1px solid #cce5d5;
+    border-bottom: 4px solid #09A350;
+    border-radius: 10px;
+
+    box-shadow: 0 3px 10px rgba(9, 163, 80, 0.08);
+}
+
+.toplam-hasta-baslik {
+    color: #527463;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+#toplamHastaSayisi {
+    color: #087c40;
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}

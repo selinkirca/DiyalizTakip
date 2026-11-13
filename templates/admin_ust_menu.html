@@ -25,6 +25,11 @@
 
     <div class="navbar-sag">
 
+        <div class="gunluk-hasta-kutusu">
+            <span class="gunluk-hasta-baslik">GÜNÜN TOPLAM HASTASI</span>
+            <span id="gunlukHastaSayisi">0</span>
+        </div>
+
         <span class="sistem-isareti"></span>
 
         <div class="navbar-kullanici">
@@ -52,11 +57,14 @@
     <!-- Menü başlığı -->
     <div class="menu-baslik">
 
-        <div class="menu-logo">D</div>
+        <div class="menu-logo">
+            <img src="{{ url_for('static', filename='logo.png') }}"
+                alt="Hastane Logosu">
+        </div>
 
-        <div>
-            <h2>Diyaliz Takip</h2>
-            <p>Yönetim Paneli</p>
+        <div class="menu-baslik-yazi">
+            <h2>KOCAELİ ÜNİVERSİTE HASTANESİ</h2>
+            <p>HEMODİYALİZ TAKİP YÖNETİMİ</p>
         </div>
 
     </div>

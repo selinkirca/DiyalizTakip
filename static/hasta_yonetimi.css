@@ -1586,3 +1586,274 @@ body {
 .hasta-tablosu tbody tr > td {
     transition: background-color 0.2s ease;
 }
+/* --------------------------------
+   TÜMÜNÜ ONAYLA
+-------------------------------- */
+
+.toplu-onay-baslik {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.toplu-onay-baslik input {
+    width: 17px;
+    height: 17px;
+
+    accent-color: #168447;
+
+    cursor: pointer;
+}
+
+.toplu-onay-baslik span {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.toplu-onay-baslik input:disabled {
+    cursor: wait;
+}
+.durum-baslik-icerik {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.durum-baslik-icerik span {
+    text-align: center;
+}
+.toplu-durum-ok {
+    position: absolute;
+    right: 8px;
+
+    width: 25px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #c5c5c5;
+    border-radius: 6px;
+
+    background: #f5f5f5;
+    color: #222;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.toplu-durum-ok:hover {
+    background: #e5e5e5;
+    border-color: #999;
+    color: #000;
+}
+
+.toplu-durum-ok.acik {
+    transform: rotate(180deg);
+    background: #e5e5e5;
+    color: #000;
+}
+
+.toplu-durum-ok svg {
+    width: 15px;
+    height: 15px;
+    stroke-width: 2.5;
+}
+.toplu-durum-liste {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+
+    background: white;
+    border: 1px solid #d5d5d5;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.toplu-durum-liste.acik {
+    display: block;
+}
+
+.toplu-durum-liste button {
+    display: block;
+    width: 100%;
+    min-height: 38px;
+    padding: 9px 5px;
+
+    border: none;
+    border-bottom: 1px solid #eee;
+
+    background: white;
+    color: #333;
+
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.toplu-durum-liste button:last-child {
+    border-bottom: none;
+}
+
+.toplu-durum-liste button:hover {
+    background: #f1f5f2;
+}
+/* =================================
+   TABLO BUTONLARI – YEŞİL TEMA
+================================= */
+
+/* Hasta Ekle Butonu */
+.hasta-ekle-buton {
+    background: #16845b;
+    color: #ffffff;
+    border: 1px solid #16845b;
+}
+
+.hasta-ekle-buton:hover {
+    background: #126b49;
+    border-color: #126b49;
+}
+
+/* Hasta Güncelle Butonu */
+.hasta-guncelle-buton {
+    background: #f0f7f3;
+    border: 1px solid #c8dfd2;
+    color: #16845b;
+}
+
+.hasta-guncelle-buton:hover {
+    background: #e2f1e8;
+    border-color: #16845b;
+    color: #126b49;
+}
+
+/* Grup Filtre Butonları */
+.grup-buton {
+    background: #ffffff;
+    border: 1px solid #c8dfd2;
+    color: #344054;
+}
+
+.grup-buton:hover {
+    background: #edf7f1;
+    border-color: #16845b;
+    color: #16845b;
+}
+
+.grup-buton.aktif {
+    background: #16845b;
+    border-color: #16845b;
+    color: #ffffff;
+}
+
+/* Hasta Kaydet Butonu */
+.hasta-kaydet-buton {
+    background: #16845b;
+    border: 1px solid #16845b;
+    color: #ffffff;
+}
+
+.hasta-kaydet-buton:hover {
+    background: #126b49;
+    border-color: #126b49;
+}
+
+/* Hasta Ekle İkonu */
+.hasta-ekle-ikon {
+    background: #e5f3eb;
+    color: #16845b;
+}
+
+/* Hasta Avatarı */
+.hasta-avatar {
+    background: #e5f3eb;
+    color: #16845b;
+}
+
+/* Form Alanı Odak Rengi */
+.hasta-form-alani input:focus,
+.hasta-form-alani select:focus {
+    border-color: #16845b;
+    box-shadow: 0 0 0 3px #16845b18;
+}
+
+/* Tablo Seçim Kutuları */
+.tablo-secimi:focus {
+    border-color: #16845b;
+    box-shadow: 0 0 0 3px #16845b18;
+}
+
+/* Onay Butonu */
+.onay-buton.onaylandi {
+    background: #16845b;
+    border-color: #16845b;
+    color: #ffffff;
+}
+
+/* Toplu Onay Checkbox */
+.toplu-onay-baslik input {
+    accent-color: #16845b;
+}
+
+/* Toplu Durum Açma Oku */
+.toplu-durum-ok:hover {
+    background: #e5f3eb;
+    border-color: #16845b;
+    color: #16845b;
+}
+
+.toplu-durum-ok.acik {
+    background: #e5f3eb;
+    border-color: #16845b;
+    color: #16845b;
+}
+
+/* Toplu Durum Listesi */
+.toplu-durum-liste {
+    border-color: #c8dfd2;
+}
+
+.toplu-durum-liste button:hover {
+    background: #edf7f1;
+    color: #16845b;
+}
+
+/* Hasta Bilgi Kutusu */
+.hasta-bilgi-kutusu {
+    border-left-color: #16845b;
+}
+
+.hasta-bilgi-ust p {
+    color: #16845b;
+}
+
+#bilgiKapatAltButonu {
+    background: #16845b;
+    color: #ffffff;
+}
+
+#bilgiKapatAltButonu:hover {
+    background: #126b49;
+}
+
+/* Popup İkonu */
+.hasta-ekle-ikon {
+    background: #e5f3eb;
+    color: #16845b;
+}
